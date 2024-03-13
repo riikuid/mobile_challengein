@@ -7,8 +7,8 @@ class MainHistoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 20.0,
+      padding: const EdgeInsets.symmetric(
+        vertical: 10.0,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,10 +70,10 @@ class MainHistoryTile extends StatelessWidget {
                   height: 3,
                 ),
                 Text(
-                  "Berhasil",
+                  "Success",
                   style: labelNormalTextStyle.copyWith(
                     color: greenLableColor,
-                    fontWeight: semibold,
+                    fontWeight: medium,
                   ),
                 ),
               ],

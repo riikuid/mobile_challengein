@@ -13,6 +13,7 @@ class SearchFilterWidget extends StatelessWidget {
           child: TextFormField(
             // selectionHeightStyle: BoxHeightStyle.tight,
             style: paragraphNormalTextStyle.copyWith(),
+            cursorColor: primaryColor500,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(),
               hintText: "Find Your History",

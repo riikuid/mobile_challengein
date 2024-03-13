@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:mobile_challengein/screen/dashboard/hitory_page.dart';
+import 'package:mobile_challengein/screen/dashboard/history_page.dart';
 import 'package:mobile_challengein/screen/dashboard/home_page.dart';
 import 'package:mobile_challengein/screen/dashboard/profile_page.dart';
 import 'package:mobile_challengein/screen/dashboard/savings_page.dart';

@@ -10,6 +10,7 @@ Color hintTextColor = const Color(0xFFBAC2C7);
 Color greyBackgroundColor = const Color(0xFFE5E5E5);
 
 Color disabledColor = const Color(0xFFC4C4C4);
+Color transparentColor = Colors.transparent;
 
 Color primaryColor50 = const Color(0xFFF3F4FD);
 Color primaryColor100 = const Color(0xFFD8DCF8);
@@ -55,6 +56,7 @@ TextStyle labelSmallTextStyle = primaryTextStyle.copyWith(fontSize: 10);
 TextStyle labelNormalTextStyle = primaryTextStyle.copyWith(fontSize: 12);
 TextStyle labelLargeTextStyle = primaryTextStyle.copyWith(fontSize: 14);
 
+FontWeight light = FontWeight.w300;
 FontWeight regular = FontWeight.w400;
 FontWeight medium = FontWeight.w500;
 FontWeight semibold = FontWeight.w600;
