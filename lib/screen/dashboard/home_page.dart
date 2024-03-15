@@ -4,9 +4,15 @@ import 'package:mobile_challengein/widget/home_savings_card.dart';
 import 'package:mobile_challengein/widget/home_status_tile.dart';
 import 'package:mobile_challengein/widget/main_history_tile.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool isObscure = true;
   @override
   Widget build(BuildContext context) {
     Widget header() {
@@ -88,10 +94,19 @@ class HomePage extends StatelessWidget {
                         const SizedBox(
                           width: 10,
                         ),
-                        Icon(
-                          Icons.remove_red_eye,
-                          size: 16,
-                          color: subtitleTextColor,
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isObscure = !isObscure;
+                            });
+                          },
+                          child: Icon(
+                            isObscure
+                                ? Icons.remove_red_eye
+                                : Icons.visibility_off,
+                            size: 16,
+                            color: subtitleTextColor,
+                          ),
                         )
                       ],
                     ),
@@ -99,7 +114,7 @@ class HomePage extends StatelessWidget {
                       height: 10,
                     ),
                     Text(
-                      "Rp50,000",
+                      isObscure ? "Rp---" : "Rp50,000",
                       style: headingLargeTextStyle.copyWith(
                         fontWeight: semibold,
                       ),
@@ -107,23 +122,23 @@ class HomePage extends StatelessWidget {
                     const SizedBox(
                       height: 20,
                     ),
-                    const Row(
+                    Row(
                       children: [
                         Expanded(
                           child: HomeStatusTile(
                             icon: "assets/icon/icon_wallet_savings.svg",
                             lable: "Wallet Savings",
-                            value: "Rp50,000",
+                            value: isObscure ? "Rp---" : "Rp50,000",
                           ),
                         ),
                         Expanded(
                           child: HomeStatusTile(
                             icon: "assets/icon/icon_savings_record.svg",
                             lable: "Savings Record",
-                            value: "Rp50,000",
+                            value: isObscure ? "Rp---" : "Rp50,000",
                           ),
                         ),
-                        Expanded(
+                        const Expanded(
                           child: HomeStatusTile(
                             icon: "assets/icon/icon_savings_count.svg",
                             lable: "Savings Count",

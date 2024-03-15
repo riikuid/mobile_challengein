@@ -7,9 +7,9 @@ import 'package:toggle_switch/toggle_switch.dart';
 
 class FillingPlanPage extends StatefulWidget {
   final int targetAmount;
+  final String? fillingPlan;
   final DateTime? estimatedTarget;
   final String? fillingFreequency;
-  final int? fillingPlan;
   final int? fillingNominal;
   const FillingPlanPage({
     super.key,
@@ -25,10 +25,37 @@ class FillingPlanPage extends StatefulWidget {
 }
 
 class _FillingPlanPageState extends State<FillingPlanPage> {
-  PageController _pageController = PageController();
+  late PageController _pageController = PageController();
   TextEditingController fillingNominalController =
       TextEditingController(text: "");
+  late int initialToogleIndex;
+
+  //SELECT DATE
   TextEditingController dateController = TextEditingController(text: "");
+  late DateTime dateValueS;
+  late String frequencyStringS;
+  late int frequencyValueS;
+  late int resultNominalS;
+
+  @override
+  void initState() {
+    isHasData();
+    _pageController = PageController(initialPage: initialToogleIndex);
+    super.initState();
+  }
+
+  void isHasData() {
+    if (widget.fillingPlan!.isNotEmpty) {
+      if (widget.fillingPlan == "select_date") {
+        setState(() {
+          initialToogleIndex = 0;
+          // dateController.text = widget.estimatedTarget;
+        });
+      } else if (widget.fillingPlan == "flexible") {
+        initialToogleIndex = 1;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +95,7 @@ class _FillingPlanPageState extends State<FillingPlanPage> {
               height: 20,
             ),
             ToggleSwitch(
-              initialLabelIndex: 0,
+              initialLabelIndex: 1,
               totalSwitches: 2,
               minWidth: (screenSize.width - 45) / 2,
               labels: const ['Select Date', 'Flexible'],

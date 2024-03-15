@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_challengein/screen/savings/filling_plan_page.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/custom_text_field.dart';
+import 'package:mobile_challengein/widget/frequency_dropdown.dart';
+import 'package:mobile_challengein/widget/primary_button.dart';
 import 'package:mobile_challengein/widget/set_reminder_widget.dart';
 
 class CreateSavingPage extends StatefulWidget {
@@ -16,6 +19,14 @@ class CreateSavingPage extends StatefulWidget {
 
 class _CreateSavingPageState extends State<CreateSavingPage> {
   // DATE PICKER
+  DateTime todayDate = DateTime.now();
+  late DateTime allowedSelectDate;
+  late DateTime dateValue;
+  late String frequencyString;
+  late int frequencyValue;
+  late int resultNominal;
+
+  // TIME PICKER
   TimeOfDay defaultTime = const TimeOfDay(hour: 12, minute: 0);
   Future displayTimePicker(BuildContext context) async {
     var time = await showTimePicker(context: context, initialTime: defaultTime);
@@ -40,9 +51,11 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
   final TextEditingController goalNameController =
       TextEditingController(text: "");
   final targetAmountController = TextEditingController(text: "");
+  TextEditingController dateController = TextEditingController(text: "");
 
   late File _image;
   final picker = ImagePicker();
+
   //Image Picker function to get image from gallery
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -54,10 +67,52 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
     });
   }
 
+  int getFrequencyValue(String value) {
+    int frequencyValue;
+
+    switch (value) {
+      case 'Daily':
+        frequencyValue = 1;
+        break;
+      case 'Weekly':
+        frequencyValue = 7;
+        break;
+      case 'Monthly':
+        frequencyValue = 30;
+        break;
+      default:
+        frequencyValue = 1;
+    }
+
+    return frequencyValue;
+  }
+
   @override
   void initState() {
+    dateValue = DateTime(todayDate.year, todayDate.month, todayDate.day + 1);
+    frequencyString = 'Daily';
+    frequencyValue = getFrequencyValue(frequencyString);
+    resultNominal = 0;
+    allowedSelectDate =
+        DateTime(todayDate.year, todayDate.month, todayDate.day + 1);
     _image = File("");
     super.initState();
+  }
+
+  void calculateResult() {
+    int amount = int.parse(targetAmountController.text.replaceAll(",", ""));
+    if (dateController.text.isNotEmpty) {
+      int differentDay = dateValue.difference(todayDate).inDays;
+      if (frequencyValue > differentDay) {
+        setState(() {
+          resultNominal = amount;
+        });
+      } else {
+        setState(() {
+          resultNominal = amount ~/ (differentDay ~/ frequencyValue);
+        });
+      }
+    }
   }
 
   @override
@@ -177,27 +232,6 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // DropdownMenu<String>(
-                  //   hintText: "Select Your Filling Frequency",
-                  //   // initialSelection: fillingFrequencyItem.first,
-                  //   expandedInsets: const EdgeInsets.all(0),
-                  //   menuStyle: MenuStyle(
-                  //     side: MaterialStatePropertyAll(
-                  //       BorderSide.none,
-                  //     ),
-                  //   ),
-                  //   onSelected: (String? value) {
-                  //     // This is called when the user selects an item.
-                  //     setState(() {
-                  //       // dropdownValue = value!;
-                  //     });
-                  //   },
-                  //   dropdownMenuEntries: fillingFrequencyItem
-                  //       .map<DropdownMenuEntry<String>>((String value) {
-                  //     return DropdownMenuEntry<String>(
-                  //         value: value, label: value);
-                  //   }).toList(),
-                  // ),
                   CustomTextField(
                     controller: goalNameController,
                     labelText: "Goal Name",
@@ -211,6 +245,9 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                     onCompleted: () {
                       // String value = targetAmountController.text;
                       // print(int.parse(value.replaceAll(",", "")));
+                      if (targetAmountController.text.isNotEmpty) {
+                        calculateResult();
+                      }
                     },
                     controller: targetAmountController,
                     labelText: "Target Amount",
@@ -230,62 +267,85 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Filling Plan",
-                        style: labelLargeTextStyle.copyWith(
-                          fontWeight: semibold,
-                        ),
+                  CustomTextField(
+                    controller: dateController,
+                    labelText: "Target Date",
+                    hintText: "Select Your Target Date",
+                    isCurrency: true,
+                    prefix: const Padding(
+                      padding: EdgeInsets.only(
+                        right: 12.0,
+                        bottom: 4,
                       ),
-                      TextButton(
-                        onPressed: () {
-                          if (targetAmountController.text.isNotEmpty) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FillingPlanPage(
-                                      targetAmount: int.parse(
-                                          targetAmountController.text
-                                              .replaceAll(",", ""))),
-                                ));
-                          } else {
-                            Fluttertoast.showToast(
-                              msg: "Target Amount Shouldn't Be Empty",
-                              timeInSecForIosWeb: 1,
-                              fontSize: 14.0,
-                            );
-                          }
+                      child: Icon(Icons.date_range),
+                    ),
+                    keyboardType: TextInputType.number,
+                    isPicker: true,
+                    pickerFunction: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: dateValue,
+                        firstDate: allowedSelectDate,
+                        lastDate: DateTime(2050),
+                        builder: (context, child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              colorScheme: ColorScheme.dark(
+                                primary: primaryColor500,
+                                onPrimary: whiteColor,
+                                surface: primaryColor50,
+                                onSurface: blackColor,
+                                onInverseSurface: blackColor,
+                              ),
+                            ),
+                            child: child!,
+                          );
                         },
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size(50, 23),
-                          maximumSize: const Size(100, 23),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 0,
-                          ),
-                          side: BorderSide(
-                            color: primaryColor500,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6.0),
-                          ),
-                        ),
-                        child: Text(
-                          "SET UP",
-                          style: labelSmallTextStyle.copyWith(
-                            color: primaryColor500,
-                          ),
-                        ),
-                      )
-                    ],
+                      );
+                      if (pickedDate != null) {
+                        dateValue = pickedDate;
+                        String formattedDate =
+                            DateFormat('dd MMMM yyyy').format(pickedDate);
+
+                        dateController.text = formattedDate;
+                        if (targetAmountController.text.isNotEmpty) {
+                          calculateResult();
+                        }
+                      } else {}
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  FrequencyDropdown(
+                    selectedValue: frequencyString,
+                    onSelectedItem: (value) {
+                      setState(() {
+                        frequencyString = value!;
+                        frequencyValue = getFrequencyValue(value);
+                      });
+                      if (targetAmountController.text.isNotEmpty) {
+                        calculateResult();
+                      }
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
                   ),
                   Text(
-                    "Filling Plan Hasn't Been Set",
-                    style: paragraphNormalTextStyle.copyWith(
-                      color: subtitleTextColor,
+                    "Recommended Filling Nominal",
+                    style: labelLargeTextStyle.copyWith(
+                      fontWeight: semibold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Rp${NumberFormat('#,##0').format(resultNominal)}",
+                    style: labelLargeTextStyle.copyWith(
+                      fontWeight: semibold,
+                      color: primaryColor600,
                     ),
                   ),
                   const SizedBox(
@@ -320,28 +380,9 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton(
+          child: PrimaryButton(
+            text: "SAVE",
             onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(6.0),
-                ),
-              ),
-              backgroundColor: primaryColor500,
-              minimumSize: const Size(
-                double.infinity,
-                40,
-              ),
-            ),
-            child: Text(
-              "SAVE",
-              style: headingNormalTextStyle.copyWith(
-                color: whiteColor,
-                fontWeight: semibold,
-                fontSize: 16,
-              ),
-            ),
           ),
         ),
       ),

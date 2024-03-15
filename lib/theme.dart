@@ -63,7 +63,7 @@ FontWeight semibold = FontWeight.w600;
 FontWeight bold = FontWeight.w700;
 
 // SHADOW
-BoxShadow defaultShadow = BoxShadow(
+BoxShadow defaultShadow = const BoxShadow(
   color: Color(0x19000000),
   blurRadius: 10,
   offset: Offset(0, 0),

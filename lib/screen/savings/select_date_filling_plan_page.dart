@@ -7,10 +7,18 @@ import 'package:mobile_challengein/widget/custom_text_field.dart';
 import 'package:mobile_challengein/widget/frequency_dropdown.dart';
 
 class SelectDateFillingPlanPage extends StatefulWidget {
+  final DateTime? estimationDate;
+  final String? estimationDateString;
+  final String? frequencyString;
+  final int? fillingNominal;
   final int targetAmount;
   const SelectDateFillingPlanPage({
     super.key,
+    this.estimationDate,
+    this.estimationDateString,
     required this.targetAmount,
+    this.frequencyString,
+    this.fillingNominal,
   });
 
   @override
@@ -19,31 +27,60 @@ class SelectDateFillingPlanPage extends StatefulWidget {
 }
 
 class _SelectDateFillingPlanPageState extends State<SelectDateFillingPlanPage> {
+  DateTime todayDate = DateTime.now();
   TextEditingController dateController = TextEditingController(text: "");
-  DateTime dateValue = DateTime(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
-  String frequencyText = 'Daily';
-  int frequencyValue = 1;
-  int result = 0;
+  late DateTime dateValue;
+  late String frequencyString;
+  late int frequencyValue;
+  late int resultNominal;
+
+  @override
+  void initState() {
+    dateValue = widget.estimationDate ??
+        DateTime(todayDate.year, todayDate.month, todayDate.day + 1);
+    dateController.text = widget.estimationDateString ?? "";
+    frequencyString = widget.frequencyString ?? 'Daily';
+    frequencyValue = getFrequencyValue(frequencyString);
+    resultNominal = widget.fillingNominal ?? 0;
+    super.initState();
+  }
+
+  int getFrequencyValue(String value) {
+    int frequencyValue;
+
+    switch (value) {
+      case 'Daily':
+        frequencyValue = 1;
+        break;
+      case 'Weekly':
+        frequencyValue = 7;
+        break;
+      case 'Monthly':
+        frequencyValue = 30;
+        break;
+      default:
+        frequencyValue = 1;
+    }
+
+    return frequencyValue;
+  }
 
   @override
   Widget build(BuildContext context) {
-    DateTime todayDate = DateTime.now();
     DateTime allowedSelectDate =
         DateTime(todayDate.year, todayDate.month, todayDate.day + 1);
 
     void calculateResult() {
       if (dateController.text.isNotEmpty) {
-        int differentDay = dateValue.difference(DateTime.now()).inDays;
+        int differentDay = dateValue.difference(todayDate).inDays;
         if (frequencyValue > differentDay) {
           setState(() {
-            result = widget.targetAmount.toInt();
+            resultNominal = widget.targetAmount.toInt();
           });
         } else {
-          // widget.targetAmount / (differentDay % frequencyValue);
-          // int result = widget.targetAmount ~/ (differentDay ~/ frequencyValue);
           setState(() {
-            result = widget.targetAmount ~/ (differentDay ~/ frequencyValue);
+            resultNominal =
+                widget.targetAmount ~/ (differentDay ~/ frequencyValue);
           });
         }
       }
@@ -104,22 +141,11 @@ class _SelectDateFillingPlanPageState extends State<SelectDateFillingPlanPage> {
               height: 20,
             ),
             FrequencyDropdown(
-              selectedValue: frequencyText,
+              selectedValue: frequencyString,
               onSelectedItem: (value) {
                 setState(() {
-                  frequencyText = value!;
-                  switch (value) {
-                    case 'Daily':
-                      frequencyValue = 1;
-                      break;
-                    case 'Weekly':
-                      frequencyValue = 7;
-                      break;
-                    case 'Monthly':
-                      frequencyValue = 30;
-                      break;
-                    default:
-                  }
+                  frequencyString = value!;
+                  frequencyValue = getFrequencyValue(value);
                 });
                 calculateResult();
               },
@@ -137,7 +163,7 @@ class _SelectDateFillingPlanPageState extends State<SelectDateFillingPlanPage> {
               height: 10,
             ),
             Text(
-              "Rp${NumberFormat('#,##0').format(result)}",
+              "Rp${NumberFormat('#,##0').format(resultNominal)}",
               style: labelLargeTextStyle.copyWith(
                 fontWeight: semibold,
                 color: primaryColor600,
