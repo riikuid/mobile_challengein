@@ -13,6 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isObscure = true;
+
   @override
   Widget build(BuildContext context) {
     Widget header() {
@@ -187,9 +188,15 @@ class _HomePageState extends State<HomePage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  HomeSavingsCard(),
-                  HomeSavingsCard(),
-                  HomeSavingsCard(),
+                  HomeSavingsCard(
+                    savingType: "savings_record",
+                  ),
+                  HomeSavingsCard(
+                    savingType: "wallet_savings",
+                  ),
+                  HomeSavingsCard(
+                    savingType: "savings_record",
+                  ),
                 ],
               ),
             ),

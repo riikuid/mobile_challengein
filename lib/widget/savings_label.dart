@@ -27,7 +27,7 @@ class SavingsTypeLable extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      padding: const EdgeInsets.fromLTRB(10, 2, 10, 4),
       decoration: BoxDecoration(
         color: backgroundColor.withOpacity(0.7),
         borderRadius: const BorderRadius.all(

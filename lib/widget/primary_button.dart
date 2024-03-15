@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile_challengein/theme.dart';
 
 class PrimaryButton extends StatelessWidget {
-  final String text;
+  final Widget child;
   final VoidCallback onPressed;
   const PrimaryButton({
     super.key,
-    required this.text,
+    required this.child,
     required this.onPressed,
   });
 
@@ -28,14 +28,7 @@ class PrimaryButton extends StatelessWidget {
           40,
         ),
       ),
-      child: Text(
-        text,
-        style: headingNormalTextStyle.copyWith(
-          color: whiteColor,
-          fontWeight: semibold,
-          fontSize: 16,
-        ),
-      ),
+      child: child,
     );
   }
 }

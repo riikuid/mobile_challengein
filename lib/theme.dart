@@ -46,7 +46,7 @@ TextStyle headingSmallTextStyle = primaryTextStyle.copyWith(fontSize: 14);
 TextStyle headingNormalTextStyle = primaryTextStyle.copyWith(fontSize: 16);
 TextStyle headingMediumTextStyle = primaryTextStyle.copyWith(fontSize: 20);
 TextStyle headingLargeTextStyle = primaryTextStyle.copyWith(fontSize: 24);
-TextStyle headingExtraLargeTextStyle = primaryTextStyle.copyWith(fontSize: 32);
+TextStyle headingExtraLargeTextStyle = primaryTextStyle.copyWith(fontSize: 40);
 
 TextStyle paragraphSmallTextStyle = primaryTextStyle.copyWith(fontSize: 12);
 TextStyle paragraphNormalTextStyle = primaryTextStyle.copyWith(fontSize: 14);

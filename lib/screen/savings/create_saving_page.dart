@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_challengein/screen/savings/filling_plan_page.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/custom_text_field.dart';
 import 'package:mobile_challengein/widget/frequency_dropdown.dart';
@@ -381,11 +379,27 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: PrimaryButton(
-            text: "SAVE",
+            child: Text(
+              "SAVE",
+              style: headingNormalTextStyle.copyWith(
+                color: whiteColor,
+                fontWeight: semibold,
+                fontSize: 16,
+              ),
+            ),
             onPressed: () {},
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    goalNameController.dispose();
+    targetAmountController.dispose();
+    dateController.dispose();
+
+    super.dispose();
   }
 }
