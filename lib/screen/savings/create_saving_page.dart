@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_challengein/screen/savings/filling_plan_page.dart';
 import 'package:mobile_challengein/theme.dart';
-import 'package:mobile_challengein/widget/custom_switch.dart';
 import 'package:mobile_challengein/widget/custom_text_field.dart';
 import 'package:mobile_challengein/widget/set_reminder_widget.dart';
 
@@ -20,8 +20,6 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
   Future displayTimePicker(BuildContext context) async {
     var time = await showTimePicker(context: context, initialTime: defaultTime);
     if (time != null) {
-      // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // });
       setState(() {
         defaultTime = time;
       });
@@ -179,6 +177,27 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // DropdownMenu<String>(
+                  //   hintText: "Select Your Filling Frequency",
+                  //   // initialSelection: fillingFrequencyItem.first,
+                  //   expandedInsets: const EdgeInsets.all(0),
+                  //   menuStyle: MenuStyle(
+                  //     side: MaterialStatePropertyAll(
+                  //       BorderSide.none,
+                  //     ),
+                  //   ),
+                  //   onSelected: (String? value) {
+                  //     // This is called when the user selects an item.
+                  //     setState(() {
+                  //       // dropdownValue = value!;
+                  //     });
+                  //   },
+                  //   dropdownMenuEntries: fillingFrequencyItem
+                  //       .map<DropdownMenuEntry<String>>((String value) {
+                  //     return DropdownMenuEntry<String>(
+                  //         value: value, label: value);
+                  //   }).toList(),
+                  // ),
                   CustomTextField(
                     controller: goalNameController,
                     labelText: "Goal Name",
@@ -222,7 +241,24 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (targetAmountController.text.isNotEmpty) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FillingPlanPage(
+                                      targetAmount: int.parse(
+                                          targetAmountController.text
+                                              .replaceAll(",", ""))),
+                                ));
+                          } else {
+                            Fluttertoast.showToast(
+                              msg: "Target Amount Shouldn't Be Empty",
+                              timeInSecForIosWeb: 1,
+                              fontSize: 14.0,
+                            );
+                          }
+                        },
                         style: TextButton.styleFrom(
                           minimumSize: const Size(50, 23),
                           maximumSize: const Size(100, 23),

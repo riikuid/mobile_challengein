@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/theme.dart';
 
 class CustomSwitch extends StatefulWidget {
   final bool value;
@@ -34,8 +35,8 @@ class _CustomSwitchState extends State<CustomSwitch>
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 60));
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 60));
     _circleAnimation = AlignmentTween(
             begin: widget.value ? Alignment.centerRight : Alignment.centerLeft,
             end: widget.value ? Alignment.centerLeft : Alignment.centerRight)
@@ -76,9 +77,9 @@ class _CustomSwitchState extends State<CustomSwitch>
                 child: Container(
                   width: widget.switchWidth ?? 12.0,
                   height: widget.switchHeight ?? 12.0,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white,
+                    color: whiteColor,
                   ),
                 ),
               ),

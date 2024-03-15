@@ -2,6 +2,7 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import 'package:mobile_challengein/theme.dart';
 
@@ -13,6 +14,9 @@ class CustomTextField extends StatelessWidget {
   final bool isCurrency;
   final TextEditingController controller;
   final VoidCallback? onCompleted;
+  final void Function(String)? onChanged;
+  final bool? isPicker;
+  final void Function()? pickerFunction;
 
   const CustomTextField({
     super.key,
@@ -23,6 +27,9 @@ class CustomTextField extends StatelessWidget {
     this.isCurrency = false,
     required this.controller,
     this.onCompleted,
+    this.onChanged,
+    this.isPicker = false,
+    this.pickerFunction,
   });
 
   @override
@@ -40,6 +47,8 @@ class CustomTextField extends StatelessWidget {
           onTapOutside: (event) {
             FocusManager.instance.primaryFocus?.unfocus();
           },
+          // enabled: false,
+          onTap: isPicker! ? pickerFunction : null,
           inputFormatters: [
             isCurrency
                 ? CurrencyTextInputFormatter(
@@ -52,6 +61,11 @@ class CustomTextField extends StatelessWidget {
                   }),
           ],
           onEditingComplete: onCompleted,
+          onChanged: onChanged,
+          onSubmitted: (value) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          readOnly: isPicker!,
           keyboardType: keyboardType,
           controller: controller,
           style: paragraphNormalTextStyle,
@@ -68,7 +82,7 @@ class CustomTextField extends StatelessWidget {
             ),
             focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: primaryColor500,
+                color: isPicker! ? disabledColor : primaryColor500,
               ),
             ),
             prefixIconConstraints: const BoxConstraints(
