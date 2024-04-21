@@ -1,13 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 import 'package:mobile_challengein/theme.dart';
 
+enum CustomTextFieldType { underline, outline }
+
 class CustomTextField extends StatelessWidget {
-  final String labelText;
+  final String? labelText;
   final String hintText;
   final Widget? prefix;
   final TextInputType keyboardType;
@@ -15,11 +18,21 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback? onCompleted;
   final void Function(String)? onChanged;
+  final void Function(PointerDownEvent)? onTapOutside;
   final bool? isPicker;
   final void Function()? pickerFunction;
+  final bool? isPassword;
+  final bool? isObscure;
+  final Widget? rightIcon;
+  final TextInputAction? textInputAction;
+  final FocusNode? focusNode;
+  final TextStyle? style;
+  final TextStyle? hintStyle;
+  final CustomTextFieldType? textFieldType;
 
   const CustomTextField({
     super.key,
+    // this.focusNode = FocusNode(),
     required this.labelText,
     required this.hintText,
     this.prefix,
@@ -28,8 +41,17 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.onCompleted,
     this.onChanged,
+    this.onTapOutside,
     this.isPicker = false,
     this.pickerFunction,
+    this.isPassword = false,
+    this.isObscure,
+    this.rightIcon,
+    this.textInputAction = TextInputAction.done,
+    this.focusNode,
+    this.style,
+    this.hintStyle,
+    this.textFieldType = CustomTextFieldType.underline,
   });
 
   @override
@@ -37,61 +59,97 @@ class CustomTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          labelText,
-          style: labelLargeTextStyle.copyWith(
-            fontWeight: semibold,
+        labelText!.isNotEmpty
+            ? Text(
+                labelText!,
+                style: labelLargeTextStyle.copyWith(
+                  fontWeight: semibold,
+                ),
+              )
+            : const SizedBox(
+                height: 0,
+              ),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: textFieldType == CustomTextFieldType.underline
+                ? Colors.transparent
+                : Colors.white,
+          ),
+          child: TextField(
+            focusNode: focusNode,
+            onTapOutside: onTapOutside,
+            onTap: isPicker! ? pickerFunction : null,
+            inputFormatters: [
+              isCurrency
+                  ? CurrencyTextInputFormatter(
+                      decimalDigits: 0,
+                      maxValue: 100000000,
+                      name: "",
+                    )
+                  : TextInputFormatter.withFunction((oldValue, newValue) {
+                      return newValue;
+                    }),
+            ],
+            onEditingComplete: onCompleted,
+            onChanged: onChanged,
+            // onSubmitted: (value) {
+            //   FocusManager.instance.primaryFocus?.unfocus();
+            // },
+            obscureText: isPassword! ? isObscure! : false,
+            readOnly: isPicker!,
+            keyboardType: keyboardType,
+            controller: controller,
+            style: style ?? paragraphNormalTextStyle,
+            textInputAction: textInputAction,
+            decoration: InputDecoration(
+              hoverColor: Colors.red,
+              contentPadding: EdgeInsets.zero,
+              hintText: hintText,
+              hintStyle: hintStyle ??
+                  paragraphNormalTextStyle.copyWith(
+                    color: subtitleTextColor,
+                  ),
+              enabledBorder: textFieldType == CustomTextFieldType.underline
+                  ? UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: disabledColor,
+                      ),
+                    )
+                  : OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                      borderSide: BorderSide(
+                        color: disabledColor,
+                      ),
+                    ),
+              focusedBorder: textFieldType == CustomTextFieldType.underline
+                  ? UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: isPicker! ? disabledColor : primaryColor500,
+                      ),
+                    )
+                  : OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                      borderSide: BorderSide(
+                        color: isPicker! ? disabledColor : primaryColor500,
+                        width: isPicker! ? 1 : 2,
+                      ),
+                    ),
+              prefixIconConstraints: const BoxConstraints(
+                maxHeight: 20,
+                maxWidth: 50,
+              ),
+              prefixIcon: prefix,
+              suffixIconConstraints: const BoxConstraints(
+                maxHeight: 20,
+              ),
+              suffix: isPassword! ? rightIcon : null,
+            ),
           ),
         ),
-        TextField(
-          onTapOutside: (event) {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          // enabled: false,
-          onTap: isPicker! ? pickerFunction : null,
-          inputFormatters: [
-            isCurrency
-                ? CurrencyTextInputFormatter(
-                    decimalDigits: 0,
-                    maxValue: 1000000000,
-                    name: "",
-                  )
-                : TextInputFormatter.withFunction((oldValue, newValue) {
-                    return newValue;
-                  }),
-          ],
-          onEditingComplete: onCompleted,
-          onChanged: onChanged,
-          onSubmitted: (value) {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          readOnly: isPicker!,
-          keyboardType: keyboardType,
-          controller: controller,
-          style: paragraphNormalTextStyle,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.all(0),
-            hintText: hintText,
-            hintStyle: paragraphNormalTextStyle.copyWith(
-              color: subtitleTextColor,
-            ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: disabledColor,
-              ),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: isPicker! ? disabledColor : primaryColor500,
-              ),
-            ),
-            prefixIconConstraints: const BoxConstraints(
-              maxHeight: 20,
-              maxWidth: 30,
-            ),
-            prefixIcon: prefix,
-          ),
-        )
       ],
     );
   }

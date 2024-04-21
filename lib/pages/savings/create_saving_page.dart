@@ -2,20 +2,31 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_challengein/model/request/saving_request.dart';
+import 'package:mobile_challengein/model/user_model.dart';
+import 'package:mobile_challengein/pages/dashboard/dashboard.dart';
+import 'package:mobile_challengein/pages/savings/detail_saving_page.dart';
+import 'package:mobile_challengein/provider/auth_provider.dart';
+import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/custom_text_field.dart';
 import 'package:mobile_challengein/widget/frequency_dropdown.dart';
 import 'package:mobile_challengein/widget/primary_button.dart';
 import 'package:mobile_challengein/widget/set_reminder_widget.dart';
+import 'package:mobile_challengein/widget/throw_snackbar.dart';
+import 'package:provider/provider.dart';
 
 class CreateSavingPage extends StatefulWidget {
-  const CreateSavingPage({super.key});
+  final String savingType;
+  const CreateSavingPage({super.key, required this.savingType});
 
   @override
   State<CreateSavingPage> createState() => _CreateSavingPageState();
 }
 
 class _CreateSavingPageState extends State<CreateSavingPage> {
+  bool _isLoading = false;
+
   // DATE PICKER
   DateTime todayDate = DateTime.now();
   late DateTime allowedSelectDate;
@@ -111,6 +122,54 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
         });
       }
     }
+  }
+
+  Future<void> handleCreateSaving() async {
+    final AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
+    final SavingProvider savingProvider =
+        Provider.of<SavingProvider>(context, listen: false);
+    setState(() {
+      _isLoading = true;
+    });
+
+    await savingProvider
+        .createSaving(
+      authProvider.user.refreshToken,
+      SavingRequest(
+        goalName: goalNameController.text,
+        targetAmount:
+            (targetAmountController.text.replaceAll(",", "")).toString(),
+        targetDate: dateValue,
+        fillingNominal: resultNominal.toString(),
+        fillingFrequency: frequencyString,
+        dayReminder: selectedDay,
+        savingType: widget.savingType,
+        isReminder: switchValue ? 1 : 0,
+        timeReminder: defaultTime.format(context),
+        fillingType: "select_date",
+      ),
+      _image.path,
+      (error) {},
+    )
+        .then((value) {
+      if (value.id.isNotEmpty) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailSavingPage(
+              saving: value,
+            ),
+          ),
+          (route) => false,
+        );
+      } else {
+        ThrowSnackbar().showError(context, "Gagal");
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    });
   }
 
   @override
@@ -247,6 +306,12 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                         calculateResult();
                       }
                     },
+                    onTapOutside: (event) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      if (targetAmountController.text.isNotEmpty) {
+                        calculateResult();
+                      }
+                    },
                     controller: targetAmountController,
                     labelText: "Target Amount",
                     hintText: "Input Your Target Amount",
@@ -302,10 +367,8 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                       );
                       if (pickedDate != null) {
                         dateValue = pickedDate;
-                        String formattedDate =
+                        dateController.text =
                             DateFormat('dd MMMM yyyy').format(pickedDate);
-
-                        dateController.text = formattedDate;
                         if (targetAmountController.text.isNotEmpty) {
                           calculateResult();
                         }
@@ -379,6 +442,8 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: PrimaryButton(
+            isLoading: _isLoading,
+            onPressed: handleCreateSaving,
             child: Text(
               "SAVE",
               style: headingNormalTextStyle.copyWith(
@@ -387,7 +452,6 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                 fontSize: 16,
               ),
             ),
-            onPressed: () {},
           ),
         ),
       ),

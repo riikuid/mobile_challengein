@@ -1,0 +1,118 @@
+{
+  "project_info": {
+    "project_number": "1031902744307",
+    "project_id": "challenge-in-push-notification",
+    "storage_bucket": "challenge-in-push-notification.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031902744307:android:a377e7e248f94cc3c63186",
+        "android_client_info": {
+          "package_name": "com.example.mobile_challengein"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031902744307-6ahjed1craing8ehik4q3u3htdej0jc1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxsVZSe-6mDFQGXk1_TedFQKkfKoaunIc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031902744307-6ahjed1craing8ehik4q3u3htdej0jc1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1031902744307-ns798cckqc5j7lsbp2urs46t72rfapi3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tabunganku"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031902744307:android:15fd3dcef272122ec63186",
+        "android_client_info": {
+          "package_name": "com.example.tabunganku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031902744307-6ahjed1craing8ehik4q3u3htdej0jc1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxsVZSe-6mDFQGXk1_TedFQKkfKoaunIc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031902744307-6ahjed1craing8ehik4q3u3htdej0jc1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1031902744307-ns798cckqc5j7lsbp2urs46t72rfapi3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tabunganku"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031902744307:android:da0ba71c10a34aa4c63186",
+        "android_client_info": {
+          "package_name": "com.mobile.tabunganku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031902744307-6ahjed1craing8ehik4q3u3htdej0jc1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxsVZSe-6mDFQGXk1_TedFQKkfKoaunIc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031902744307-6ahjed1craing8ehik4q3u3htdej0jc1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1031902744307-ns798cckqc5j7lsbp2urs46t72rfapi3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tabunganku"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,15 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/model/savings_model.dart';
 
-import 'package:mobile_challengein/screen/savings/detail_saving_page.dart';
+import 'package:mobile_challengein/pages/savings/detail_saving_page.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/savings_label.dart';
 
 class HomeSavingsCard extends StatelessWidget {
-  final String savingType;
+  final SavingModel saving;
   const HomeSavingsCard({
     super.key,
-    required this.savingType,
+    required this.saving,
   });
 
   @override
@@ -20,7 +21,7 @@ class HomeSavingsCard extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => DetailSavingPage(
-                      savingType: savingType,
+                      saving: saving,
                     )));
       },
       child: Container(
@@ -48,8 +49,8 @@ class HomeSavingsCard extends StatelessWidget {
                     Radius.circular(5.0),
                   ),
                   image: DecorationImage(
-                    image: NetworkImage(
-                      "https://images.unsplash.com/photo-1533050487297-09b450131914?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+                    image: AssetImage(
+                      "assets/image/example_savings.png",
                     ),
                     fit: BoxFit.cover,
                   ),
@@ -57,7 +58,7 @@ class HomeSavingsCard extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.topRight,
                   child: SavingsTypeLable(
-                    savingsType: savingType,
+                    savingsType: saving.savingType,
                   ),
                 ),
               ),

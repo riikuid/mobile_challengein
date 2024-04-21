@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/model/user_model.dart';
+import 'package:mobile_challengein/provider/auth_provider.dart';
+import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
+import 'package:mobile_challengein/widget/home_saving_card_skeleton.dart';
 import 'package:mobile_challengein/widget/home_savings_card.dart';
 import 'package:mobile_challengein/widget/home_status_tile.dart';
 import 'package:mobile_challengein/widget/main_history_tile.dart';
+import 'package:mobile_challengein/widget/saving_card_skeleton.dart';
+import 'package:mobile_challengein/widget/savings_label.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +24,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
+    UserModel user = authProvider.user;
+
+    SavingProvider savingProvider = Provider.of<SavingProvider>(context);
+
+    Future<void> getAllSavings() async {
+      await savingProvider.getSavings(user.refreshToken);
+    }
+
     Widget header() {
       return ColoredBox(
         color: primaryColor500,
@@ -43,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Hai, Kamu",
+                            "Hai, ${user.name.split(" ").first}",
                             style: paragraphNormalTextStyle.copyWith(
                               color: whiteColor,
                               fontWeight: semibold,
@@ -184,21 +202,83 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            const SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  HomeSavingsCard(
-                    savingType: "savings_record",
-                  ),
-                  HomeSavingsCard(
-                    savingType: "wallet_savings",
-                  ),
-                  HomeSavingsCard(
-                    savingType: "savings_record",
-                  ),
-                ],
-              ),
+            SizedBox(
+              height: 225,
+              child: FutureBuilder(
+                  future: savingProvider.getSavings(user.refreshToken),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return ListView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: const [
+                          HomeSavingCardSkeleton(),
+                          HomeSavingCardSkeleton(),
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Expanded(
+                        child: Center(
+                          child: Text(
+                            'Failed to load savings',
+                            style: primaryTextStyle.copyWith(
+                              color: subtitleTextColor,
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Consumer<SavingProvider>(
+                          builder: (context, savingProvider, _) {
+                        if (savingProvider.savings.isEmpty) {
+                          return Expanded(
+                            child: Center(
+                              child: Text(
+                                "You Don't Have Any Saving",
+                                style: primaryTextStyle.copyWith(
+                                  color: subtitleTextColor,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return Expanded(
+                            child: RefreshIndicator(
+                                onRefresh: () {
+                                  return Future.delayed(
+                                      const Duration(seconds: 1), () {
+                                    setState(() {
+                                      getAllSavings();
+                                    });
+                                  });
+                                },
+                                color: secondaryColor500,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: savingProvider.savings
+                                        .map((item) => HomeSavingsCard(
+                                              saving: item,
+                                            ))
+                                        .toList(),
+                                    // children: [
+                                    //   // HomeSavingsCard(
+                                    //   //   savingType: "savings_record",
+                                    //   // ),
+                                    //   // HomeSavingsCard(
+                                    //   //   savingType: "wallet_savings",
+                                    //   // ),
+                                    //   // HomeSavingsCard(
+                                    //   //   savingType: "savings_record",
+                                    //   // ),
+                                    // ],
+                                  ),
+                                )),
+                          );
+                        }
+                      });
+                    }
+                  }),
             ),
             const SizedBox(
               height: 10,

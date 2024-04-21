@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_challengein/screen/savings/flexible_filling_plan_page.dart';
-import 'package:mobile_challengein/screen/savings/select_date_filling_plan_page.dart';
+import 'package:mobile_challengein/pages/savings/flexible_filling_plan_page.dart';
+import 'package:mobile_challengein/pages/savings/select_date_filling_plan_page.dart';
 import 'package:mobile_challengein/theme.dart';
 
 import 'package:toggle_switch/toggle_switch.dart';

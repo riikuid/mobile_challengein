@@ -1,10 +1,19 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:mobile_challengein/theme.dart';
-import 'package:mobile_challengein/widget/savings_label.dart';
+import 'package:mobile_challengein/common/format_currency.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-class SavingsCard extends StatelessWidget {
-  const SavingsCard({super.key});
+import 'package:mobile_challengein/model/savings_model.dart';
+import 'package:mobile_challengein/pages/savings/detail_saving_page.dart';
+import 'package:mobile_challengein/theme.dart';
+import 'package:mobile_challengein/widget/savings_label.dart';
+
+class SavingCard extends StatelessWidget {
+  final SavingModel saving;
+  const SavingCard({
+    super.key,
+    required this.saving,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +23,11 @@ class SavingsCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 10),
         width: double.infinity,
         decoration: BoxDecoration(
+          color: disabledColor,
           boxShadow: [defaultShadow],
-          image: const DecorationImage(
+          image: DecorationImage(
             image: NetworkImage(
-              "https://images.unsplash.com/photo-1533050487297-09b450131914?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+              saving.pathImage,
             ),
             fit: BoxFit.cover,
           ),
@@ -26,7 +36,14 @@ class SavingsCard extends StatelessWidget {
           ),
         ),
         child: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailSavingPage(saving: saving),
+              ),
+            );
+          },
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -57,21 +74,21 @@ class SavingsCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "IPHONE 14 XR",
+                              saving.goalName,
                               style: headingSmallTextStyle.copyWith(
                                 color: whiteColor,
                                 fontWeight: medium,
                               ),
                             ),
                             Text(
-                              "Rp150,000,000",
+                              formatCurrency(saving.savingAmount),
                               style: headingMediumTextStyle.copyWith(
                                 color: whiteColor,
                                 fontWeight: semibold,
                               ),
                             ),
                             Text(
-                              "GOAL: Rp500,000,000",
+                              formatCurrency(saving.targetAmount),
                               style: headingSmallTextStyle.copyWith(
                                 color: whiteColor,
                                 fontWeight: medium,
@@ -84,11 +101,11 @@ class SavingsCard extends StatelessWidget {
                             radius: 40,
                             lineWidth: 10.0,
                             backgroundColor: whiteColor.withOpacity(0.5),
-                            percent: 0.6,
+                            percent: saving.progressSavings / 10,
                             progressColor: whiteColor,
                             circularStrokeCap: CircularStrokeCap.round,
                             center: Text(
-                              "100%",
+                              "${saving.progressSavings}%",
                               style: headingSmallTextStyle.copyWith(
                                 color: whiteColor,
                                 fontWeight: bold,

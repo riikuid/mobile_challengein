@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:mobile_challengein/screen/dashboard/history_page.dart';
-import 'package:mobile_challengein/screen/dashboard/home_page.dart';
-import 'package:mobile_challengein/screen/dashboard/profile_page.dart';
-import 'package:mobile_challengein/screen/dashboard/savings_page.dart';
+import 'package:mobile_challengein/pages/dashboard/history_page.dart';
+import 'package:mobile_challengein/pages/dashboard/home_page.dart';
+import 'package:mobile_challengein/pages/dashboard/profile_page.dart';
+import 'package:mobile_challengein/pages/dashboard/savings_page.dart';
 import 'package:mobile_challengein/theme.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  final int? dashboardValue;
+  const Dashboard({
+    super.key,
+    this.dashboardValue,
+  });
 
   @override
   State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  int currentIndex = 0;
+  late int currentIndex;
 
   List dashboardMenu = [
     [
@@ -85,6 +89,12 @@ class _DashboardState extends State<Dashboard> {
         ).toList(),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    currentIndex = widget.dashboardValue ?? 0;
+    super.initState();
   }
 
   @override
