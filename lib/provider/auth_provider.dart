@@ -33,6 +33,32 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> register({
+    required String fullName,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      bool registerStatus = await AuthService().register(
+        fullName: fullName,
+        email: email,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+      );
+
+      return registerStatus;
+    } on SocketException {
+      errorCallback?.call("No Internet Connection");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      // print(e.toString());
+      return false;
+    }
+  }
+
   Future<bool> activateAccount({
     required String code,
     required String fcmToken,

@@ -3,9 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile_challengein/pages/auth/activation_page.dart';
 import 'package:mobile_challengein/pages/auth/sign_in_page.dart';
+import 'package:mobile_challengein/provider/auth_provider.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/custom_text_field.dart';
 import 'package:mobile_challengein/widget/primary_button.dart';
+import 'package:mobile_challengein/widget/throw_snackbar.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -16,6 +19,8 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   bool isObscure = true;
+  bool isObscure2 = true;
+  bool _isLoading = false;
   TextEditingController fullNameController = TextEditingController(text: "");
   final FocusNode _fullNameFocusNode = FocusNode();
   TextEditingController emailController = TextEditingController(text: "");
@@ -25,6 +30,51 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController confirmPasswordController =
       TextEditingController(text: "");
   final FocusNode _confirmPasswordFocusNode = FocusNode();
+
+  String errorText = "Failed to register";
+
+  Future<void> handleRegister() async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
+
+    setState(() {
+      _isLoading = true;
+    });
+    await authProvider
+        .register(
+      email: emailController.text,
+      password: passwordControler.text,
+      passwordConfirmation: confirmPasswordController.text,
+      fullName: fullNameController.text,
+      errorCallback: (e) => setState(
+        () {
+          errorText = e.toString();
+        },
+      ),
+    )
+        .then(
+      (value) {
+        if (value) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ActivationPage(
+                email: emailController.text,
+              ),
+            ),
+          );
+        } else {
+          ThrowSnackbar().showError(context, errorText);
+        }
+      },
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -59,7 +109,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   Text(
                     "Let’s start your financial journey\nwith us!",
                     style: paragraphNormalTextStyle.copyWith(
-                      height: 2,
+                      height: 1.5,
                       fontWeight: regular,
                       color: subtitleTextColor,
                     ),
@@ -121,16 +171,16 @@ class _SignUpPageState extends State<SignUpPage> {
                     keyboardType: TextInputType.emailAddress,
                     controller: confirmPasswordController,
                     isPassword: true,
-                    isObscure: isObscure,
+                    isObscure: isObscure2,
                     rightIcon: IconButton(
                       icon: Icon(
-                        isObscure ? Icons.visibility : Icons.visibility_off,
+                        isObscure2 ? Icons.visibility : Icons.visibility_off,
                         size: 20,
                       ),
                       color: subtitleTextColor,
                       onPressed: () {
                         setState(() {
-                          isObscure = !isObscure;
+                          isObscure2 = !isObscure2;
                         });
                       },
                     ),
@@ -139,23 +189,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     height: 40,
                   ),
                   PrimaryButton(
-                    child: Text(
-                      "SIGN UP",
-                      style: headingNormalTextStyle.copyWith(
-                        color: whiteColor,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ActivationPage(
-                            email: emailController.text,
-                          ),
+                      isLoading: _isLoading,
+                      onPressed: handleRegister,
+                      child: Text(
+                        "SIGN UP",
+                        style: headingNormalTextStyle.copyWith(
+                          color: whiteColor,
                         ),
-                      );
-                    },
-                  ),
+                      )),
                   const SizedBox(
                     height: 15,
                   ),

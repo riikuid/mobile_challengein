@@ -5,12 +5,9 @@ import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/home_saving_card_skeleton.dart';
 import 'package:mobile_challengein/widget/home_savings_card.dart';
-import 'package:mobile_challengein/widget/home_status_tile.dart';
+import 'package:mobile_challengein/widget/home_user_savings_widget.dart';
 import 'package:mobile_challengein/widget/main_history_tile.dart';
-import 'package:mobile_challengein/widget/saving_card_skeleton.dart';
-import 'package:mobile_challengein/widget/savings_label.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,20 +17,34 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late String errorGetSavingText;
   bool isObscure = true;
+
+  late AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late UserModel user = authProvider.user;
+  late SavingProvider savingProvider =
+      Provider.of<SavingProvider>(context, listen: false);
+  late Future<void> futureGetSavings;
+
+  Future<void> getAllSavings() async {
+    await savingProvider.getSavings(
+      user.refreshToken,
+      (p0) => setState(() {
+        errorGetSavingText = p0;
+      }),
+      "",
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futureGetSavings = getAllSavings();
+  }
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider =
-        Provider.of<AuthProvider>(context, listen: false);
-    UserModel user = authProvider.user;
-
-    SavingProvider savingProvider = Provider.of<SavingProvider>(context);
-
-    Future<void> getAllSavings() async {
-      await savingProvider.getSavings(user.refreshToken);
-    }
-
     Widget header() {
       return ColoredBox(
         color: primaryColor500,
@@ -90,84 +101,23 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 20,
               ),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: whiteColor,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10.0),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Savings Amount",
-                          style: labelNormalTextStyle.copyWith(
-                            color: subtitleTextColor,
-                            fontWeight: semibold,
-                          ),
+              Consumer<SavingProvider>(
+                builder: (context, savingProvider, _) {
+                  if (savingProvider.savings.isEmpty) {
+                    return Center(
+                      child: Text(
+                        errorGetSavingText,
+                        style: primaryTextStyle.copyWith(
+                          color: subtitleTextColor,
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isObscure = !isObscure;
-                            });
-                          },
-                          child: Icon(
-                            isObscure
-                                ? Icons.remove_red_eye
-                                : Icons.visibility_off,
-                            size: 16,
-                            color: subtitleTextColor,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      isObscure ? "Rp---" : "Rp50,000",
-                      style: headingLargeTextStyle.copyWith(
-                        fontWeight: semibold,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: HomeStatusTile(
-                            icon: "assets/icon/icon_wallet_savings.svg",
-                            lable: "Wallet Savings",
-                            value: isObscure ? "Rp---" : "Rp50,000",
-                          ),
-                        ),
-                        Expanded(
-                          child: HomeStatusTile(
-                            icon: "assets/icon/icon_savings_record.svg",
-                            lable: "Savings Record",
-                            value: isObscure ? "Rp---" : "Rp50,000",
-                          ),
-                        ),
-                        const Expanded(
-                          child: HomeStatusTile(
-                            icon: "assets/icon/icon_savings_count.svg",
-                            lable: "Savings Count",
-                            value: "3 Savings",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                    );
+                  } else {
+                    return HomeUserSavingsWidget(
+                      userSaving: savingProvider.userSaving!,
+                    );
+                  }
+                },
               ),
             ],
           ),
@@ -204,26 +154,33 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(
               height: 225,
+              width: MediaQuery.of(context).size.width,
+              // width: double.infinity,
               child: FutureBuilder(
-                  future: savingProvider.getSavings(user.refreshToken),
+                  future: savingProvider.getSavings(
+                    user.refreshToken,
+                    (p0) => setState(() {
+                      errorGetSavingText = p0;
+                    }),
+                    "",
+                  ),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return ListView(
+                      return SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: const [
-                          HomeSavingCardSkeleton(),
-                          HomeSavingCardSkeleton(),
-                        ],
+                        child: const Row(
+                          children: [
+                            HomeSavingCardSkeleton(),
+                            HomeSavingCardSkeleton(),
+                          ],
+                        ),
                       );
                     } else if (snapshot.hasError) {
-                      return Expanded(
-                        child: Center(
-                          child: Text(
-                            'Failed to load savings',
-                            style: primaryTextStyle.copyWith(
-                              color: subtitleTextColor,
-                            ),
+                      return Center(
+                        child: Text(
+                          'Failed to load savings',
+                          style: primaryTextStyle.copyWith(
+                            color: subtitleTextColor,
                           ),
                         ),
                       );
@@ -231,50 +188,46 @@ class _HomePageState extends State<HomePage> {
                       return Consumer<SavingProvider>(
                           builder: (context, savingProvider, _) {
                         if (savingProvider.savings.isEmpty) {
-                          return Expanded(
-                            child: Center(
-                              child: Text(
-                                "You Don't Have Any Saving",
-                                style: primaryTextStyle.copyWith(
-                                  color: subtitleTextColor,
-                                ),
+                          return Center(
+                            child: Text(
+                              errorGetSavingText ?? "You Don't Have Any Saving",
+                              style: primaryTextStyle.copyWith(
+                                color: subtitleTextColor,
                               ),
                             ),
                           );
                         } else {
-                          return Expanded(
-                            child: RefreshIndicator(
-                                onRefresh: () {
-                                  return Future.delayed(
-                                      const Duration(seconds: 1), () {
-                                    setState(() {
-                                      getAllSavings();
-                                    });
+                          return RefreshIndicator(
+                              onRefresh: () {
+                                return Future.delayed(
+                                    const Duration(seconds: 1), () {
+                                  setState(() {
+                                    getAllSavings();
                                   });
-                                },
-                                color: secondaryColor500,
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: savingProvider.savings
-                                        .map((item) => HomeSavingsCard(
-                                              saving: item,
-                                            ))
-                                        .toList(),
-                                    // children: [
-                                    //   // HomeSavingsCard(
-                                    //   //   savingType: "savings_record",
-                                    //   // ),
-                                    //   // HomeSavingsCard(
-                                    //   //   savingType: "wallet_savings",
-                                    //   // ),
-                                    //   // HomeSavingsCard(
-                                    //   //   savingType: "savings_record",
-                                    //   // ),
-                                    // ],
-                                  ),
-                                )),
-                          );
+                                });
+                              },
+                              color: secondaryColor500,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: savingProvider.savings
+                                      .map((item) => HomeSavingsCard(
+                                            saving: item,
+                                          ))
+                                      .toList(),
+                                  // children: [
+                                  //   // HomeSavingsCard(
+                                  //   //   savingType: "savings_record",
+                                  //   // ),
+                                  //   // HomeSavingsCard(
+                                  //   //   savingType: "wallet_savings",
+                                  //   // ),
+                                  //   // HomeSavingsCard(
+                                  //   //   savingType: "savings_record",
+                                  //   // ),
+                                  // ],
+                                ),
+                              ));
                         }
                       });
                     }

@@ -20,7 +20,7 @@ class SavingModel {
   final String savingType;
   final bool isReminder;
   final String fillingType;
-  final int progressSavings;
+  final double progressSavings;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -63,7 +63,7 @@ class SavingModel {
     String? savingType,
     bool? isReminder,
     String? fillingType,
-    int? progressSavings,
+    double? progressSavings,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) =>
@@ -106,7 +106,7 @@ class SavingModel {
         savingType: json["saving_type"],
         isReminder: json["is_reminder"],
         fillingType: json["filling_type"],
-        progressSavings: json["progress_savings"],
+        progressSavings: double.parse(json["progress_savings"].toString()),
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );

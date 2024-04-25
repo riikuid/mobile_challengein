@@ -21,16 +21,36 @@ class SavingsPage extends StatefulWidget {
 }
 
 class _SavingsPageState extends State<SavingsPage> {
+  late AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late UserModel user = authProvider.user;
+  late SavingProvider savingProvider =
+      Provider.of<SavingProvider>(context, listen: false);
+  late String errorGetSavingText;
+  late Future<void> futureGetSavings;
+
+  Future<void> getAllSavings() async {
+    await savingProvider.getSavings(
+      user.refreshToken,
+      (p0) => setState(() {
+        errorGetSavingText = p0;
+      }),
+      "",
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futureGetSavings = getAllSavings();
+  }
+
   @override
   Widget build(BuildContext context) {
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    UserModel user = authProvider.user;
+    // AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    // UserModel user = authProvider.user;
 
-    SavingProvider savingProvider = Provider.of<SavingProvider>(context);
-
-    Future<void> getAllSavings() async {
-      await savingProvider.getSavings(user.refreshToken);
-    }
+    // SavingProvider savingProvider = Provider.of<SavingProvider>(context);
 
     return Scaffold(
       backgroundColor: whiteColor,
@@ -93,7 +113,7 @@ class _SavingsPageState extends State<SavingsPage> {
               height: 10,
             ),
             FutureBuilder(
-              future: savingProvider.getSavings(user.refreshToken),
+              future: futureGetSavings,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Expanded(
@@ -125,7 +145,7 @@ class _SavingsPageState extends State<SavingsPage> {
                       return Expanded(
                         child: Center(
                           child: Text(
-                            "You Don't Have Any Saving",
+                            errorGetSavingText ?? "You Don't Have Any Saving",
                             style: primaryTextStyle.copyWith(
                               color: subtitleTextColor,
                             ),

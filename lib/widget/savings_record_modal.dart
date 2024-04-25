@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:mobile_challengein/common/format_currency.dart';
+import 'package:mobile_challengein/model/savings_model.dart';
+import 'package:mobile_challengein/provider/auth_provider.dart';
+import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/custom_text_field.dart';
 import 'package:mobile_challengein/widget/primary_button.dart';
+import 'package:mobile_challengein/widget/throw_snackbar.dart';
+import 'package:provider/provider.dart';
 
 enum SavingsRecordModalType { increase, decrease }
 
 class SavingsRecordModal extends StatefulWidget {
+  final SavingModel saving;
   final SavingsRecordModalType modalType;
-  const SavingsRecordModal({super.key, required this.modalType});
+  const SavingsRecordModal(
+      {super.key, required this.modalType, required this.saving});
 
   @override
   State<SavingsRecordModal> createState() => _SavingsRecordModalState();
@@ -16,7 +25,10 @@ class SavingsRecordModal extends StatefulWidget {
 class _SavingsRecordModalState extends State<SavingsRecordModal>
     with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
-  bool isValid = false;
+  bool _isValid = false;
+  bool _isLoading = false;
+  String errorText = "";
+  int amount = 0;
 
   @override
   void initState() {
@@ -25,15 +37,41 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
   }
 
   @override
-  void dispose() {
-    // _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return StatefulBuilder(
       builder: (context, setStateModal) {
+        Future<void> handleSubmit() async {
+          SavingProvider savingProvider =
+              Provider.of<SavingProvider>(context, listen: false);
+          AuthProvider authProvider =
+              Provider.of<AuthProvider>(context, listen: false);
+          setStateModal(() {
+            _isLoading = true;
+          });
+          // print(SavingsRecordModalType.values.toString());
+          await savingProvider
+              .updateSavingsRecord(
+            amount: amount.toString(),
+            idSaving: widget.saving.id,
+            updateType: widget.modalType.name,
+            token: authProvider.user.refreshToken,
+            errorCallback: (error) {
+              errorText = error.toString();
+            },
+          )
+              .then((value) {
+            if (value) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pop(context);
+              ThrowSnackbar().showError(context, errorText);
+            }
+          });
+          setStateModal(() {
+            _isLoading = false;
+          });
+        }
+
         return Padding(
           padding: EdgeInsets.fromLTRB(
             20,
@@ -75,7 +113,7 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                             ),
                           ),
                           Text(
-                            'IPHONE 14 PRO MAX',
+                            widget.saving.goalName,
                             style: labelSmallTextStyle.copyWith(
                               fontSize: 12,
                               fontWeight: regular,
@@ -86,10 +124,13 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                       ),
                     ],
                   ),
-                  Icon(
-                    Icons.close,
-                    size: 20,
-                    color: subtitleTextColor,
+                  GestureDetector(
+                    onTap: _isLoading ? null : () => Navigator.pop(context),
+                    child: Icon(
+                      Icons.close,
+                      size: 20,
+                      color: subtitleTextColor,
+                    ),
                   ),
                 ],
               ),
@@ -104,19 +145,21 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                 ),
                 onChanged: (value) {
                   if (value.isNotEmpty) {
-                    int amount = int.parse(value.replaceAll(",", ""));
-                    if (amount > 1) {
-                      setStateModal(() {
-                        isValid = true;
-                      });
-                    } else {
-                      setStateModal(() {
-                        isValid = false;
-                      });
-                    }
+                    setStateModal(
+                      () {
+                        amount = int.parse(
+                          value.replaceAll(",", ""),
+                        );
+                        if (amount > 1) {
+                          _isValid = true;
+                        } else {
+                          _isValid = false;
+                        }
+                      },
+                    );
                   } else {
                     setStateModal(() {
-                      isValid = false;
+                      _isValid = false;
                     });
                   }
                 },
@@ -140,7 +183,7 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                 height: 10,
               ),
               Text(
-                'Balance Rp20,000,000',
+                'Balance ${formatCurrency(widget.saving.savingAmount)}',
                 style: labelSmallTextStyle.copyWith(
                   fontSize: 12,
                   fontWeight: regular,
@@ -151,7 +194,9 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                 height: 10,
               ),
               PrimaryButton(
-                isEnabled: isValid,
+                isLoading: _isLoading,
+                isEnabled: _isValid,
+                onPressed: handleSubmit,
                 child: Text(
                   "SUBMIT",
                   style: paragraphLargeTextStyle.copyWith(
@@ -159,7 +204,6 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                     fontWeight: semibold,
                   ),
                 ),
-                onPressed: () {},
               ),
               const SizedBox(
                 height: 20,
@@ -169,5 +213,11 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

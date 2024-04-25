@@ -87,12 +87,25 @@ class SavingCard extends StatelessWidget {
                                 fontWeight: semibold,
                               ),
                             ),
-                            Text(
-                              formatCurrency(saving.targetAmount),
-                              style: headingSmallTextStyle.copyWith(
-                                color: whiteColor,
-                                fontWeight: medium,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.savings,
+                                  color: whiteColor,
+                                  size: 14,
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  formatCurrency(saving.targetAmount),
+                                  style: headingSmallTextStyle.copyWith(
+                                    color: whiteColor,
+                                    fontWeight: medium,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -101,11 +114,11 @@ class SavingCard extends StatelessWidget {
                             radius: 40,
                             lineWidth: 10.0,
                             backgroundColor: whiteColor.withOpacity(0.5),
-                            percent: saving.progressSavings / 10,
-                            progressColor: whiteColor,
+                            percent: saving.progressSavings,
+                            progressColor: primaryColor400,
                             circularStrokeCap: CircularStrokeCap.round,
                             center: Text(
-                              "${saving.progressSavings}%",
+                              '${(saving.progressSavings * 100).toStringAsFixed(0)}%',
                               style: headingSmallTextStyle.copyWith(
                                 color: whiteColor,
                                 fontWeight: bold,

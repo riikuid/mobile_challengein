@@ -32,28 +32,33 @@ class AuthService {
     }
   }
 
-  Future<UserModel> register({
+  Future<bool> register({
     required String fullName,
     required String email,
     required String password,
-    required String fcmToken,
+    required String passwordConfirmation,
   }) async {
-    var url = '$baseUrl/auth/login';
+    var url = '$baseUrl/auth/register';
+
     var headers = {'Content-Type': 'application/json'};
+
     var body = jsonEncode({
+      'name': fullName,
       'email': email,
       'password': password,
-      'fcm_token': fcmToken,
+      'konfirmasi_password': passwordConfirmation,
     });
-    final response =
-        await http.post(Uri.parse(url), headers: headers, body: body);
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: body,
+    );
 
     print(response.body);
 
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body)['data'];
-      UserModel user = UserModel.fromJson(data);
-      return user;
+      return true;
     } else {
       throw jsonDecode(response.body)['messages'];
     }

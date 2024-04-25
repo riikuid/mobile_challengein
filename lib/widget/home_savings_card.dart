@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/common/format_currency.dart';
 import 'package:mobile_challengein/model/savings_model.dart';
 
 import 'package:mobile_challengein/pages/savings/detail_saving_page.dart';
@@ -44,13 +45,14 @@ class HomeSavingsCard extends StatelessWidget {
               aspectRatio: 16 / 9,
               child: Container(
                 padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(
+                decoration: BoxDecoration(
+                  color: greyBackgroundColor,
+                  borderRadius: const BorderRadius.all(
                     Radius.circular(5.0),
                   ),
                   image: DecorationImage(
-                    image: AssetImage(
-                      "assets/image/example_savings.png",
+                    image: NetworkImage(
+                      saving.pathImage,
                     ),
                     fit: BoxFit.cover,
                   ),
@@ -72,7 +74,7 @@ class HomeSavingsCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Rumah Kcuing",
+                    saving.goalName,
                     style: headingSmallTextStyle.copyWith(
                       color: subtitleTextColor,
                       fontWeight: medium,
@@ -82,13 +84,13 @@ class HomeSavingsCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Rp50,0000",
+                        formatCurrency(saving.savingAmount),
                         style: headingNormalTextStyle.copyWith(
                           fontWeight: semibold,
                         ),
                       ),
                       Text(
-                        "15%",
+                        '${(saving.progressSavings * 100).toStringAsFixed(0)}%',
                         style: labelNormalTextStyle.copyWith(
                           fontWeight: semibold,
                           color: primaryColor500,
@@ -105,7 +107,7 @@ class HomeSavingsCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: LinearProgressIndicator(
-                value: 0.4,
+                value: saving.progressSavings,
                 minHeight: 10,
                 color: primaryColor500,
                 backgroundColor: greyBackgroundColor,

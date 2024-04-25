@@ -161,7 +161,7 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
               saving: value,
             ),
           ),
-          (route) => false,
+          (route) => true,
         );
       } else {
         ThrowSnackbar().showError(context, "Gagal");

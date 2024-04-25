@@ -153,7 +153,7 @@ class _SignInPageState extends State<SignInPage> {
               CustomTextField(
                 labelText: "Password",
                 hintText: "•••••••••",
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.visiblePassword,
                 controller: passwordController,
                 isPassword: true,
                 isObscure: isObscure,
