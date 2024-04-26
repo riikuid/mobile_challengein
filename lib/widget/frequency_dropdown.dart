@@ -9,7 +9,7 @@ class FrequencyDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> fillingFrequencyItem = ['Daily', 'Weekly', 'Monthly'];
+    List<String> fillingFrequencyItem = ['Daily', 'Weekly'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -31,9 +31,10 @@ class SavingProvider with ChangeNotifier {
       rethrow;
       // throw "No Internet Connection";
     } catch (error) {
+      getUserSaving(token, (p0) {});
       log('qqqqqq $error');
       errorCallback?.call(error);
-      rethrow;
+      return false;
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/model/user_model.dart';
 import 'package:mobile_challengein/pages/savings/create_saving_page.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
@@ -29,14 +30,15 @@ class _SavingsPageState extends State<SavingsPage> {
   late String errorGetSavingText;
   late Future<void> futureGetSavings;
 
-  Future<void> getAllSavings() async {
-    await savingProvider.getSavings(
+  Future<bool> getAllSavings() async {
+    bool result = await savingProvider.getSavings(
       user.refreshToken,
       (p0) => setState(() {
         errorGetSavingText = p0;
       }),
       "",
     );
+    return result;
   }
 
   @override

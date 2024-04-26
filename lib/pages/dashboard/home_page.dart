@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_challengein/model/user_model.dart';
+import 'package:mobile_challengein/pages/dashboard/dashboard.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
@@ -17,7 +20,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late String errorGetSavingText;
+  String errorGetSavingText = "Error to Get Saving";
+  String errorToFetchUserSaving = "Error to Fetch User Saving";
   bool isObscure = true;
 
   late AuthProvider authProvider =
@@ -103,15 +107,8 @@ class _HomePageState extends State<HomePage> {
               ),
               Consumer<SavingProvider>(
                 builder: (context, savingProvider, _) {
-                  if (savingProvider.savings.isEmpty) {
-                    return Center(
-                      child: Text(
-                        errorGetSavingText,
-                        style: primaryTextStyle.copyWith(
-                          color: subtitleTextColor,
-                        ),
-                      ),
-                    );
+                  if (savingProvider.userSaving == null) {
+                    return const HomeUserSavingsWidget();
                   } else {
                     return HomeUserSavingsWidget(
                       userSaving: savingProvider.userSaving!,
@@ -142,11 +139,20 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: medium,
                     ),
                   ),
-                  Text(
-                    "SEE ALL",
-                    style: labelNormalTextStyle.copyWith(
-                      color: primaryColor500,
-                      fontWeight: medium,
+                  GestureDetector(
+                    onTap: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Dashboard(
+                            dashboardValue: 1,
+                          ),
+                        )),
+                    child: Text(
+                      "SEE ALL",
+                      style: labelNormalTextStyle.copyWith(
+                        color: primaryColor500,
+                        fontWeight: medium,
+                      ),
                     ),
                   ),
                 ],
@@ -157,18 +163,12 @@ class _HomePageState extends State<HomePage> {
               width: MediaQuery.of(context).size.width,
               // width: double.infinity,
               child: FutureBuilder(
-                  future: savingProvider.getSavings(
-                    user.refreshToken,
-                    (p0) => setState(() {
-                      errorGetSavingText = p0;
-                    }),
-                    "",
-                  ),
+                  future: futureGetSavings,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SingleChildScrollView(
+                      return const SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        child: const Row(
+                        child: Row(
                           children: [
                             HomeSavingCardSkeleton(),
                             HomeSavingCardSkeleton(),
@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                     } else if (snapshot.hasError) {
                       return Center(
                         child: Text(
-                          'Failed to load savings',
+                          errorGetSavingText,
                           style: primaryTextStyle.copyWith(
                             color: subtitleTextColor,
                           ),
@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                         if (savingProvider.savings.isEmpty) {
                           return Center(
                             child: Text(
-                              errorGetSavingText ?? "You Don't Have Any Saving",
+                              errorGetSavingText,
                               style: primaryTextStyle.copyWith(
                                 color: subtitleTextColor,
                               ),

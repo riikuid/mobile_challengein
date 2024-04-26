@@ -5,8 +5,8 @@ import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/home_status_tile.dart';
 
 class HomeUserSavingsWidget extends StatefulWidget {
-  final UserSaving userSaving;
-  const HomeUserSavingsWidget({super.key, required this.userSaving});
+  final UserSaving? userSaving;
+  const HomeUserSavingsWidget({super.key, this.userSaving});
 
   @override
   State<HomeUserSavingsWidget> createState() => _HomeUserSavingsWidgetState();
@@ -65,7 +65,9 @@ class _HomeUserSavingsWidgetState extends State<HomeUserSavingsWidget> {
           Text(
             _isObscure
                 ? "Rp---"
-                : formatCurrency(widget.userSaving.savingsAmount),
+                : widget.userSaving != null
+                    ? formatCurrency(widget.userSaving!.savingsAmount)
+                    : "Loading",
             style: headingLargeTextStyle.copyWith(
               fontWeight: semibold,
             ),
@@ -81,7 +83,9 @@ class _HomeUserSavingsWidgetState extends State<HomeUserSavingsWidget> {
                   lable: "Wallet Savings",
                   value: _isObscure
                       ? "Rp---"
-                      : formatCurrency(widget.userSaving.walletSavings),
+                      : widget.userSaving != null
+                          ? formatCurrency(widget.userSaving!.walletSavings)
+                          : "Loading",
                 ),
               ),
               Expanded(
@@ -90,14 +94,18 @@ class _HomeUserSavingsWidgetState extends State<HomeUserSavingsWidget> {
                   lable: "Savings Record",
                   value: _isObscure
                       ? "Rp---"
-                      : formatCurrency(widget.userSaving.savingsRecord),
+                      : widget.userSaving != null
+                          ? formatCurrency(widget.userSaving!.savingsRecord)
+                          : "Loading",
                 ),
               ),
               Expanded(
                 child: HomeStatusTile(
                   icon: "assets/icon/icon_savings_count.svg",
                   lable: "Savings Count",
-                  value: "${widget.userSaving.countSavings} Savings",
+                  value: widget.userSaving != null
+                      ? "${widget.userSaving!.countSavings} Savings"
+                      : "0 Savings",
                 ),
               ),
             ],

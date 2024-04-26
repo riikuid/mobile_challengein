@@ -154,15 +154,25 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
     )
         .then((value) {
       if (value.id.isNotEmpty) {
-        Navigator.pushAndRemoveUntil(
-          context,
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => DetailSavingPage(
+        //       saving: value,
+        //     ),
+        //   ),
+        //   (route) => true,
+        // );
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => DetailSavingPage(
               saving: value,
             ),
           ),
-          (route) => true,
+          (route) => route.isFirst,
         );
+
+        // Navigator.of(context).popUntil((route) => route.isFirst);
       } else {
         ThrowSnackbar().showError(context, "Gagal");
       }

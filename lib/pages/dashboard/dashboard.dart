@@ -10,7 +10,7 @@ class Dashboard extends StatefulWidget {
   final int? dashboardValue;
   const Dashboard({
     super.key,
-    this.dashboardValue,
+    this.dashboardValue = 0,
   });
 
   @override
@@ -18,7 +18,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  late int currentIndex;
+  late int currentIndex = widget.dashboardValue!;
 
   List dashboardMenu = [
     [
