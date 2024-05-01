@@ -1,8 +1,17 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/common/format_currency.dart';
+import 'package:mobile_challengein/common/format_date.dart';
+
+import 'package:mobile_challengein/model/history_model.dart';
 import 'package:mobile_challengein/theme.dart';
 
 class MainHistoryTile extends StatelessWidget {
-  const MainHistoryTile({super.key});
+  final HistoryModel history;
+  const MainHistoryTile({
+    super.key,
+    required this.history,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +28,12 @@ class MainHistoryTile extends StatelessWidget {
                 height: 30,
                 width: 30,
                 decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      history.pathImage,
+                    ),
+                    fit: BoxFit.cover,
+                  ),
                   color: subtitleTextColor,
                   shape: BoxShape.circle,
                 ),
@@ -30,7 +45,7 @@ class MainHistoryTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Top Up",
+                    history.typeTrx,
                     style: labelLargeTextStyle.copyWith(
                       color: blackColor,
                       fontWeight: medium,
@@ -40,7 +55,7 @@ class MainHistoryTile extends StatelessWidget {
                     height: 3,
                   ),
                   Text(
-                    "Today",
+                    formatDateToString(history.updatedAt),
                     style: labelNormalTextStyle.copyWith(
                       color: subtitleTextColor,
                       fontWeight: medium,
@@ -58,7 +73,7 @@ class MainHistoryTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  "+Rp150,000",
+                  formatCurrency(history.amountMoney),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: labelLargeTextStyle.copyWith(
@@ -70,7 +85,7 @@ class MainHistoryTile extends StatelessWidget {
                   height: 3,
                 ),
                 Text(
-                  "Success",
+                  history.statusTrx,
                   style: labelNormalTextStyle.copyWith(
                     color: greenLableColor,
                     fontWeight: medium,

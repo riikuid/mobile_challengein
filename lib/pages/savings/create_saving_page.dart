@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_challengein/model/request/saving_request.dart';
-import 'package:mobile_challengein/model/user_model.dart';
-import 'package:mobile_challengein/pages/dashboard/dashboard.dart';
 import 'package:mobile_challengein/pages/savings/detail_saving_page.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
@@ -133,8 +131,7 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
       _isLoading = true;
     });
 
-    await savingProvider
-        .createSaving(
+    await savingProvider.createSaving(
       authProvider.user.refreshToken,
       SavingRequest(
         goalName: goalNameController.text,
@@ -149,20 +146,15 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
         timeReminder: defaultTime.format(context),
         fillingType: "select_date",
       ),
-      _image.path,
-      (error) {},
-    )
-        .then((value) {
+      _image.path.isNotEmpty ? _image.path : '',
+      (error) {
+        setState(() {
+          _isLoading = false;
+        });
+        ThrowSnackbar().showError(context, error.toString());
+      },
+    ).then((value) {
       if (value.id.isNotEmpty) {
-        // Navigator.pushAndRemoveUntil(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => DetailSavingPage(
-        //       saving: value,
-        //     ),
-        //   ),
-        //   (route) => true,
-        // );
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => DetailSavingPage(
@@ -172,6 +164,7 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
           (route) => route.isFirst,
         );
 
+        ThrowSnackbar().showError(context, "Succes Create Saving");
         // Navigator.of(context).popUntil((route) => route.isFirst);
       } else {
         ThrowSnackbar().showError(context, "Gagal");

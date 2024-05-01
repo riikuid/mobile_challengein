@@ -13,6 +13,7 @@ class SavingRequest {
   final int isReminder;
   final String timeReminder;
   final String fillingType;
+  final String? pathImage;
 
   SavingRequest({
     required this.goalName,
@@ -25,6 +26,7 @@ class SavingRequest {
     required this.isReminder,
     required this.timeReminder,
     required this.fillingType,
+    this.pathImage,
   });
 
   Map<String, String> toJson() => {
@@ -39,5 +41,6 @@ class SavingRequest {
         "is_reminder": isReminder.toString(),
         "time_reminder": timeReminder,
         "filling_type": fillingType,
+        "path_image": pathImage ?? "",
       };
 }

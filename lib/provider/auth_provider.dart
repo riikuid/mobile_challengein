@@ -1,10 +1,15 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/common/token_repository.dart';
 import 'package:mobile_challengein/model/user_model.dart';
+import 'package:mobile_challengein/pages/dashboard/home_page.dart';
 import 'package:mobile_challengein/service/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
+  final tokenRepository = TokenRepository();
   UserModel? _user;
   UserModel get user => _user!;
 
@@ -21,6 +26,28 @@ class AuthProvider with ChangeNotifier {
         fcmToken: fcmToken,
       );
       _user = user;
+      tokenRepository.putToken(user.refreshToken);
+      notifyListeners();
+      return true;
+    } on SocketException {
+      errorCallback?.call("No Internet Connection");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      // print(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> authWithToken({
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      log("COKK");
+      UserModel user = await AuthService()
+          .authWithToken((await tokenRepository.getToken())!);
+      _user = user;
+      tokenRepository.putToken(user.refreshToken);
       notifyListeners();
       return true;
     } on SocketException {
@@ -70,6 +97,7 @@ class AuthProvider with ChangeNotifier {
         fcmToken: fcmToken,
       );
       _user = user;
+      tokenRepository.putToken(user.refreshToken);
       notifyListeners();
       return true;
     } catch (e) {
@@ -89,6 +117,21 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       print(e);
       // return false;
+    }
+  }
+
+  Future<void> checkAuthenticationStatus(BuildContext context) async {
+    bool isLoggedIn = await tokenRepository.getToken() != null;
+    if (isLoggedIn) {
+      try {
+        authWithToken();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } catch (e) {
+        print(e.toString());
+      }
+      // Jika pengguna sudah login, arahkan ke HomePage
     }
   }
 }

@@ -4,12 +4,14 @@ import 'package:flutter/widgets.dart';
 import 'package:mobile_challengein/model/user_model.dart';
 import 'package:mobile_challengein/pages/dashboard/dashboard.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
+import 'package:mobile_challengein/provider/history_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/home_saving_card_skeleton.dart';
 import 'package:mobile_challengein/widget/home_savings_card.dart';
 import 'package:mobile_challengein/widget/home_user_savings_widget.dart';
 import 'package:mobile_challengein/widget/main_history_tile.dart';
+import 'package:mobile_challengein/widget/main_history_tile_skeleton.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,7 +31,10 @@ class _HomePageState extends State<HomePage> {
   late UserModel user = authProvider.user;
   late SavingProvider savingProvider =
       Provider.of<SavingProvider>(context, listen: false);
+  late HistoryProvider historyProvider =
+      Provider.of<HistoryProvider>(context, listen: false);
   late Future<void> futureGetSavings;
+  late Future<void> futureGetHistories;
 
   Future<void> getAllSavings() async {
     await savingProvider.getSavings(
@@ -41,10 +46,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<void> getRecentHistory() async {
+    await historyProvider.refreshGetHistory();
+  }
+
   @override
   void initState() {
     super.initState();
     futureGetSavings = getAllSavings();
+    futureGetHistories = getRecentHistory();
   }
 
   @override
@@ -215,17 +225,6 @@ class _HomePageState extends State<HomePage> {
                                             saving: item,
                                           ))
                                       .toList(),
-                                  // children: [
-                                  //   // HomeSavingsCard(
-                                  //   //   savingType: "savings_record",
-                                  //   // ),
-                                  //   // HomeSavingsCard(
-                                  //   //   savingType: "wallet_savings",
-                                  //   // ),
-                                  //   // HomeSavingsCard(
-                                  //   //   savingType: "savings_record",
-                                  //   // ),
-                                  // ],
                                 ),
                               ));
                         }
@@ -270,9 +269,70 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 20,
               ),
-              const MainHistoryTile(),
-              const MainHistoryTile(),
-              const MainHistoryTile(),
+              FutureBuilder(
+                  future: futureGetHistories,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: [
+                            MainHistoryTileSkeleton(),
+                            MainHistoryTileSkeleton(),
+                            MainHistoryTileSkeleton(),
+                          ],
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          errorGetSavingText,
+                          style: primaryTextStyle.copyWith(
+                            color: subtitleTextColor,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Consumer<HistoryProvider>(
+                          builder: (context, savingProvider, _) {
+                        if (savingProvider.histories.isEmpty) {
+                          return Center(
+                            child: Text(
+                              errorGetSavingText,
+                              style: primaryTextStyle.copyWith(
+                                color: subtitleTextColor,
+                              ),
+                            ),
+                          );
+                        } else {
+                          return RefreshIndicator(
+                              onRefresh: () {
+                                return Future.delayed(
+                                    const Duration(seconds: 1), () {
+                                  setState(() {
+                                    getAllSavings();
+                                  });
+                                });
+                              },
+                              color: secondaryColor500,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Column(
+                                  children: historyProvider.histories
+                                      .map((item) => MainHistoryTile(
+                                            history: item,
+                                          ))
+                                      .take(5)
+                                      .toList(),
+                                ),
+                              ));
+                        }
+                      });
+                    }
+                  }),
+              // const MainHistoryTile(),
+              // const MainHistoryTile(),
+              // const MainHistoryTile(),
             ],
           ),
         ),

@@ -5,6 +5,8 @@ import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/widget/custom_switch.dart';
+import 'package:mobile_challengein/widget/main_history_tile.dart';
+import 'package:mobile_challengein/widget/main_history_tile_skeleton.dart';
 import 'package:mobile_challengein/widget/saving_hitory_tile.dart';
 import 'package:mobile_challengein/widget/savings_record_modal.dart';
 import 'package:mobile_challengein/widget/throw_snackbar.dart';
@@ -28,20 +30,46 @@ class DetailSavingPage extends StatefulWidget {
 
 class _DetailSavingPageState extends State<DetailSavingPage> {
   TextEditingController modalController = TextEditingController(text: "");
+  late AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late SavingProvider savingProvider =
+      Provider.of<SavingProvider>(context, listen: false);
   FocusNode modalFocus = FocusNode();
   late ScrollController _scrollController;
   bool switchValue = false;
   bool lastStatus = true;
   double height = 330;
   String errorText = "Failed to delete saving";
+  late Future<void> futureGetHistories;
+
+  Future<void> _onRefresh() async {
+    await savingProvider.refreshGetHistory(
+      token: authProvider.user.refreshToken,
+      idSaving: widget.saving.id,
+    );
+  }
+
+  Future<void> getRecentHistory() async {
+    await savingProvider.refreshGetHistory(
+      token: authProvider.user.refreshToken,
+      idSaving: widget.saving.id,
+    );
+  }
+
+  void onScroll() {
+    double maxScroll = _scrollController.position.maxScrollExtent;
+    double currentScroll = _scrollController.position.pixels;
+
+    if (currentScroll == maxScroll && context.read<SavingProvider>().hasMore) {
+      savingProvider.getHistory(
+        token: authProvider.user.refreshToken,
+        idSaving: widget.saving.id,
+      );
+    }
+  }
 
   Future<void> handleDeleteSaving() async {
-    AuthProvider authProvider = Provider.of<AuthProvider>(
-      context,
-      listen: false,
-    );
-
-    await Provider.of<SavingProvider>(context, listen: false)
+    await savingProvider
         .deleteSaving(
       idSaving: widget.saving.id,
       token: authProvider.user.refreshToken,
@@ -62,9 +90,15 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
 
   @override
   void initState() {
+    super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
     switchValue = widget.saving.isReminder;
-    super.initState();
+    savingProvider.refreshGetHistory(
+      token: authProvider.user.refreshToken,
+      idSaving: widget.saving.id,
+    );
+    _scrollController.addListener(onScroll);
+    futureGetHistories = _onRefresh();
   }
 
   void _scrollListener() {
@@ -159,81 +193,84 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
     }
 
     Widget appbarBackground(SavingModel selectedSaving) {
-      return Container(
-        padding: const EdgeInsets.only(bottom: 30, top: 60),
-        width: screenSize.width,
-        // height: screenSize.width,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(
-              selectedSaving.pathImage,
-            ),
-            colorFilter: ColorFilter.mode(
-                blackColor.withOpacity(0.5), BlendMode.multiply),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 200,
-              child: SfRadialGauge(
-                axes: <RadialAxis>[
-                  RadialAxis(
-                    minimum: 0,
-                    maximum: 100,
-                    showLabels: false,
-                    showTicks: false,
-                    axisLineStyle: AxisLineStyle(
-                      thickness: 0.2,
-                      cornerStyle: CornerStyle.bothCurve,
-                      color: whiteColor.withOpacity(0.3),
-                      thicknessUnit: GaugeSizeUnit.factor,
-                    ),
-                    pointers: <GaugePointer>[
-                      RangePointer(
-                        color: primaryColor400,
-                        value: selectedSaving.progressSavings * 100,
-                        cornerStyle: CornerStyle.bothCurve,
-                        width: 0.2,
-                        sizeUnit: GaugeSizeUnit.factor,
-                      )
-                    ],
-                    annotations: <GaugeAnnotation>[
-                      GaugeAnnotation(
-                        positionFactor: 0.1,
-                        angle: 90,
-                        widget: Text(
-                          '${(selectedSaving.progressSavings * 100).toStringAsFixed(0)}%',
-                          style: headingExtraLargeTextStyle.copyWith(
-                            fontSize: 40,
-                            fontWeight: semibold,
-                            color: whiteColor,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
+      return Hero(
+        tag: "image_savings",
+        child: Container(
+          padding: const EdgeInsets.only(bottom: 30, top: 60),
+          width: screenSize.width,
+          // height: screenSize.width,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(
+                selectedSaving.pathImage,
               ),
+              colorFilter: ColorFilter.mode(
+                  blackColor.withOpacity(0.5), BlendMode.multiply),
+              fit: BoxFit.cover,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-              child: Text(
-                widget.saving.goalName,
-                textAlign: TextAlign.center,
-                style: headingLargeTextStyle.copyWith(
-                  color: whiteColor,
-                  fontWeight: semibold,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 200,
+                child: SfRadialGauge(
+                  axes: <RadialAxis>[
+                    RadialAxis(
+                      minimum: 0,
+                      maximum: 100,
+                      showLabels: false,
+                      showTicks: false,
+                      axisLineStyle: AxisLineStyle(
+                        thickness: 0.2,
+                        cornerStyle: CornerStyle.bothCurve,
+                        color: whiteColor.withOpacity(0.3),
+                        thicknessUnit: GaugeSizeUnit.factor,
+                      ),
+                      pointers: <GaugePointer>[
+                        RangePointer(
+                          color: primaryColor400,
+                          value: selectedSaving.progressSavings * 100,
+                          cornerStyle: CornerStyle.bothCurve,
+                          width: 0.2,
+                          sizeUnit: GaugeSizeUnit.factor,
+                        )
+                      ],
+                      annotations: <GaugeAnnotation>[
+                        GaugeAnnotation(
+                          positionFactor: 0.1,
+                          angle: 90,
+                          widget: Text(
+                            '${(selectedSaving.progressSavings * 100).toStringAsFixed(0)}%',
+                            style: headingExtraLargeTextStyle.copyWith(
+                              fontSize: 40,
+                              fontWeight: semibold,
+                              color: whiteColor,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            SavingsTypeLable(savingsType: widget.saving.savingType),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Text(
+                  widget.saving.goalName,
+                  textAlign: TextAlign.center,
+                  style: headingLargeTextStyle.copyWith(
+                    color: whiteColor,
+                    fontWeight: semibold,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              SavingsTypeLable(savingsType: widget.saving.savingType),
+            ],
+          ),
         ),
       );
     }
@@ -454,6 +491,59 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
       );
     }
 
+    Widget listHistory() {
+      return FutureBuilder(
+          future: futureGetHistories,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    MainHistoryTileSkeleton(),
+                    MainHistoryTileSkeleton(),
+                    MainHistoryTileSkeleton(),
+                  ],
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  "No history found",
+                  style: primaryTextStyle.copyWith(
+                    color: subtitleTextColor,
+                  ),
+                ),
+              );
+            } else {
+              return Consumer<SavingProvider>(
+                  builder: (context, savingProvider, _) {
+                if (savingProvider.savingHistories.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No history found",
+                      style: primaryTextStyle.copyWith(
+                        color: subtitleTextColor,
+                      ),
+                    ),
+                  );
+                } else {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: savingProvider.savingHistories
+                          .map((item) => MainHistoryTile(
+                                history: item,
+                              ))
+                          .toList(),
+                    ),
+                  );
+                }
+              });
+            }
+          });
+    }
+
     return Consumer<SavingProvider>(
       builder: (context, savingProvider, _) {
         print("Q Q Q Q Q QQQ");
@@ -584,26 +674,10 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                       ),
                       ColoredBox(
                         color: whiteColor,
-                        child: const Padding(
+                        child: Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 25, vertical: 20),
-                          child: Column(
-                            children: [
-                              SavingHistoryTile(
-                                type: "Withdraw",
-                              ),
-                              SavingHistoryTile(),
-                              SavingHistoryTile(),
-                              SavingHistoryTile(
-                                type: "Withdraw",
-                              ),
-                              SavingHistoryTile(),
-                              SavingHistoryTile(),
-                              SavingHistoryTile(),
-                              SavingHistoryTile(),
-                              SavingHistoryTile(),
-                            ],
-                          ),
+                          child: listHistory(),
                         ),
                       )
                     ],

@@ -22,7 +22,7 @@ class HomeStatusTile extends StatelessWidget {
       children: [
         SvgPicture.asset(
           icon,
-          height: 40,
+          height: 30,
         ),
         const SizedBox(
           height: 7,

@@ -32,6 +32,26 @@ class AuthService {
     }
   }
 
+  Future<UserModel> authWithToken(String token) async {
+    var url = '$baseUrl/auth/user-profile';
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.get(Uri.parse(url), headers: headers);
+
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['data'];
+      UserModel user = UserModel.fromJson(data);
+      return user;
+    } else {
+      throw jsonDecode(response.body)['messages'];
+    }
+  }
+
   Future<bool> register({
     required String fullName,
     required String email,

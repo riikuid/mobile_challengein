@@ -1,10 +1,14 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/model/history_model.dart';
 import 'package:mobile_challengein/model/request/saving_request.dart';
 import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/model/user_saving.dart';
+import 'package:mobile_challengein/provider/history_provider.dart';
+import 'package:mobile_challengein/service/history_service.dart';
 import 'package:mobile_challengein/service/saving_service.dart';
 
 class SavingProvider with ChangeNotifier {
@@ -13,6 +17,11 @@ class SavingProvider with ChangeNotifier {
 
   UserSaving? _userSaving;
   UserSaving? get userSaving => _userSaving;
+
+  List<HistoryModel> _savingHistories = [];
+  List<HistoryModel> get savingHistories => _savingHistories;
+
+  bool isOnTrx = false;
 
   Future<bool> getSavings(
     String token,
@@ -73,7 +82,9 @@ class SavingProvider with ChangeNotifier {
     } on SocketException {
       errorCallback?.call("No Internet Connection");
       rethrow;
-      // throw "No Internet Connection";
+    } on PathNotFoundException {
+      errorCallback?.call("Image can't be empty ");
+      rethrow;
     } catch (error) {
       errorCallback?.call(error);
       rethrow;
@@ -102,6 +113,14 @@ class SavingProvider with ChangeNotifier {
           return saving;
         }
       }).toList();
+
+      await refreshGetHistory(
+        token: token,
+        idSaving: idSaving,
+      );
+
+      isOnTrx = true;
+
       notifyListeners();
       getUserSaving(token, (p0) {});
       return true;
@@ -141,5 +160,49 @@ class SavingProvider with ChangeNotifier {
       // print(error);
       return false;
     }
+  }
+
+  final int _limit = 10;
+  int _page = 1;
+  bool hasMore = true;
+
+  Future getHistory({
+    required String token,
+    required String idSaving,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      List<HistoryModel> result = await HistoryService().getHistory(
+        token: token,
+        limit: _limit,
+        page: _page,
+        idSavings: idSaving,
+      );
+
+      if (result.length < _limit) {
+        hasMore = false;
+      }
+      _savingHistories.addAll(result);
+
+      _page++;
+      notifyListeners();
+    } catch (error) {
+      if (kDebugMode) log(error.toString());
+      errorCallback?.call(error);
+    }
+  }
+
+  Future refreshGetHistory(
+      {required String token, required String idSaving}) async {
+    _page = 1;
+    _savingHistories = [];
+    hasMore = true;
+
+    await getHistory(token: token, idSaving: idSaving);
+    notifyListeners();
+  }
+
+  void onDoneTrx() {
+    isOnTrx = false;
   }
 }

@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/model/user_model.dart';
 import 'package:mobile_challengein/pages/savings/create_saving_page.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
@@ -27,7 +24,7 @@ class _SavingsPageState extends State<SavingsPage> {
   late UserModel user = authProvider.user;
   late SavingProvider savingProvider =
       Provider.of<SavingProvider>(context, listen: false);
-  late String errorGetSavingText;
+  String errorGetSavingText = "Failed to get savings";
   late Future<void> futureGetSavings;
 
   Future<bool> getAllSavings() async {
@@ -49,11 +46,6 @@ class _SavingsPageState extends State<SavingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    // UserModel user = authProvider.user;
-
-    // SavingProvider savingProvider = Provider.of<SavingProvider>(context);
-
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: AppBar(
@@ -133,7 +125,7 @@ class _SavingsPageState extends State<SavingsPage> {
                   return Expanded(
                     child: Center(
                       child: Text(
-                        'Failed to load savings',
+                        errorGetSavingText,
                         style: primaryTextStyle.copyWith(
                           color: subtitleTextColor,
                         ),
@@ -147,7 +139,7 @@ class _SavingsPageState extends State<SavingsPage> {
                       return Expanded(
                         child: Center(
                           child: Text(
-                            errorGetSavingText ?? "You Don't Have Any Saving",
+                            errorGetSavingText,
                             style: primaryTextStyle.copyWith(
                               color: subtitleTextColor,
                             ),

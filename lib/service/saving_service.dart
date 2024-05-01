@@ -94,6 +94,45 @@ class SavingService {
     }
   }
 
+  Future<SavingModel> editSaving(
+    String token,
+    SavingRequest request,
+    String pathImage,
+    String idSaving,
+  ) async {
+    var url = '$baseUrl/auth/savings/$idSaving';
+    var requestMultipart = http.MultipartRequest('POST', Uri.parse(url));
+
+    var headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    requestMultipart.fields.addAll(request.toJson());
+
+    // Baca file gambar sebagai MultipartFile dan tambahkan ke dalam permintaan multipart
+    var imageFile = await http.MultipartFile.fromPath('path_image', pathImage);
+    requestMultipart.files.add(imageFile);
+
+    // Set header
+    requestMultipart.headers.addAll(headers);
+
+    // Kirim permintaan
+    var streamedResponse = await requestMultipart.send();
+
+    // Terima respons
+    var response = await http.Response.fromStream(streamedResponse);
+
+    log(response.body);
+
+    if (response.statusCode == 201) {
+      var data = jsonDecode(response.body)['data'];
+      SavingModel saving = SavingModel.fromJson(data);
+      return saving;
+    } else {
+      throw jsonDecode(response.body)['messages'];
+    }
+  }
+
   Future<SavingModel> updateSavingRecordsAmount({
     required String token,
     required String idSaving,

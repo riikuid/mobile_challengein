@@ -6,6 +6,7 @@ class HistoryModel {
   int amountMoney;
   DateTime createdAt;
   DateTime updatedAt;
+  String pathImage;
 
   HistoryModel({
     required this.id,
@@ -15,6 +16,7 @@ class HistoryModel {
     required this.amountMoney,
     required this.createdAt,
     required this.updatedAt,
+    required this.pathImage,
   });
 
   HistoryModel copyWith({
@@ -25,6 +27,7 @@ class HistoryModel {
     int? amountMoney,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? pathImage,
   }) =>
       HistoryModel(
         id: id ?? this.id,
@@ -34,6 +37,7 @@ class HistoryModel {
         amountMoney: amountMoney ?? this.amountMoney,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
+        pathImage: pathImage ?? this.pathImage,
       );
 
   factory HistoryModel.fromJson(Map<String, dynamic> json) => HistoryModel(
@@ -44,6 +48,7 @@ class HistoryModel {
         amountMoney: json["amount_money"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
+        pathImage: json["path_image"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -54,5 +59,6 @@ class HistoryModel {
         "amount_money": amountMoney,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
+        "path_image": pathImage,
       };
 }
