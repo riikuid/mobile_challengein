@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/savings_label.dart';
 import 'package:shimmer/shimmer.dart';
@@ -50,7 +51,7 @@ class HomeSavingCardSkeleton extends StatelessWidget {
                 child: const Align(
                   alignment: Alignment.topRight,
                   child: SavingsTypeLable(
-                    savingsType: "savings_record",
+                    savingsType: SavingType.record,
                   ),
                 ),
               ),

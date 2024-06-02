@@ -148,6 +148,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: passwordControler,
                     isPassword: true,
                     isObscure: isObscure,
+                    enableTooltip: true,
                     rightIcon: IconButton(
                       icon: Icon(
                         isObscure ? Icons.visibility : Icons.visibility_off,

@@ -29,25 +29,25 @@ class _AuthWrapperState extends State<AuthWrapper> {
       log("TOKEN ONOK");
       final success = await authProvider.authWithToken(errorCallback: (error) {
         // Tampilkan pesan error jika terjadi kesalahan
-        ThrowSnackbar().showError(context, error);
+        // ThrowSnackbar().showError(context, error);
       });
       if (success) {
         log("SUKSES BOLO");
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const Dashboard(),
+              builder: (context) => Dashboard(),
             ));
       } else {
-        log("GAISOK COKK");
+        log("GAISOK ");
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const SignInPage(),
+              builder: (context) => SignInPage(),
             ));
       }
     } else {
-      log("NuLL COKK");
+      log("NuLL ");
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -65,7 +65,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     authCheck();
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),
       ),

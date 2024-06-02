@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_challengein/model/request/saving_request.dart';
+import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/pages/savings/detail_saving_page.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
@@ -15,7 +16,7 @@ import 'package:mobile_challengein/widget/throw_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class CreateSavingPage extends StatefulWidget {
-  final String savingType;
+  final SavingType savingType;
   const CreateSavingPage({super.key, required this.savingType});
 
   @override

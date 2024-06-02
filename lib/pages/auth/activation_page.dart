@@ -60,7 +60,7 @@ class _ActivationPageState extends State<ActivationPage> {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (context) => const Dashboard(),
+              builder: (context) => Dashboard(),
             ),
             (route) => false);
       } else {

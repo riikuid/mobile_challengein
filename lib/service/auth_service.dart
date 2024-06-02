@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import "package:http/http.dart" as http;
+import "package:mobile_challengein/model/bank_model.dart";
 import "package:mobile_challengein/model/user_model.dart";
 
 class AuthService {
@@ -110,11 +111,14 @@ class AuthService {
     }
   }
 
-  Future<void> logout({UserModel? user}) async {
-    var url = '$baseUrl/logout';
+  Future<void> logout({
+    UserModel? user,
+    required String token,
+  }) async {
+    var url = '$baseUrl/auth/logout';
     var headers = {
       'Content-Type': 'application/json',
-      'Authorization': user!.refreshToken,
+      'Authorization': "Bearer $token",
     };
 
     final response = await http.post(Uri.parse(url), headers: headers);
@@ -128,8 +132,31 @@ class AuthService {
     }
   }
 
-  Future<String> reqCode({required String email}) async {
-    var url = '$baseUrl/auth/kode';
+  Future<bool> reqCode({
+    required String email,
+    required bool isForgotPassword,
+  }) async {
+    var url = '$baseUrl/auth/kode${isForgotPassword ? '/password' : ''}';
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    var body = jsonEncode({
+      'email': email,
+    });
+
+    final response =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonDecode(response.body)['messages'];
+    }
+  }
+
+  Future<String> reqCodePassword({required String email}) async {
+    var url = '$baseUrl/auth/kode/pasword';
     var headers = {
       'Content-Type': 'application/json',
     };
@@ -145,6 +172,54 @@ class AuthService {
       return jsonDecode(response.body)['messages'];
     } else {
       throw Exception('Failed to request code.');
+    }
+  }
+
+  Future<bool> checkCodePassword({
+    required String code,
+  }) async {
+    var url = '$baseUrl/auth/verifikasi-password';
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    var body = jsonEncode({
+      'code': code,
+    });
+
+    final response =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonDecode(response.body)['messages'];
+    }
+  }
+
+  Future<bool> createNewPassword({
+    required String code,
+    required String password,
+    required String confirmationPassword,
+  }) async {
+    var url = '$baseUrl/auth/ganti-password';
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    var body = jsonEncode({
+      'code': code,
+      'password': password,
+      'konfirmasi_password': confirmationPassword,
+    });
+
+    final response =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw jsonDecode(response.body)['messages'];
     }
   }
 }

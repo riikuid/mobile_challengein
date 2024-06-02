@@ -8,28 +8,57 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool? isLoading;
   final bool? isEnabled;
+  final Color? color;
+  final double? width;
+  final double? height;
+  final double? elevation;
+  final Color? borderColor;
+  final bool? reverseLoading;
   const PrimaryButton({
     super.key,
     required this.child,
     required this.onPressed,
     this.isLoading = false,
-    this.isEnabled,
+    this.reverseLoading = false,
+    this.isEnabled = true,
+    this.color,
+    this.width,
+    this.height,
+    this.elevation,
+    this.borderColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: !isLoading! ? onPressed : () {},
+      onPressed: isEnabled!
+          ? !isLoading!
+              ? onPressed
+              : () {}
+          : () {},
       style: ElevatedButton.styleFrom(
-        shape: const RoundedRectangleBorder(
+        elevation: elevation ?? 1,
+        // padding: const EdgeInsets.symmetric(horizontal: 10),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(6.0),
           ),
+          side: borderColor != null
+              ? BorderSide(
+                  color: borderColor!,
+                )
+              : BorderSide.none,
         ),
-        backgroundColor: !isLoading! ? primaryColor500 : disabledColor,
-        minimumSize: const Size(
-          double.infinity,
-          40,
+        backgroundColor: !isLoading!
+            ? color ?? primaryColor500
+            : reverseLoading!
+                ? whiteColor
+                : disabledColor,
+        foregroundColor: secondaryColor100,
+        shadowColor: elevation != 0 ? null : transparentColor,
+        minimumSize: Size(
+          width ?? double.infinity,
+          height ?? 40,
         ),
       ),
       child: !isLoading!
@@ -42,7 +71,7 @@ class PrimaryButton extends StatelessWidget {
                   width: 15,
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
-                    color: whiteColor,
+                    color: reverseLoading! ? primaryColor500 : whiteColor,
                   ),
                 ),
                 const SizedBox(
@@ -53,7 +82,7 @@ class PrimaryButton extends StatelessWidget {
                   style: primaryTextStyle.copyWith(
                     fontWeight: semibold,
                     fontSize: 16,
-                    color: whiteColor,
+                    color: reverseLoading! ? primaryColor500 : whiteColor,
                   ),
                 )
               ],

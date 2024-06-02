@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:mobile_challengein/common/format_currency.dart';
+import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import 'package:mobile_challengein/model/savings_model.dart';
@@ -29,6 +29,15 @@ class SavingCard extends StatelessWidget {
             image: NetworkImage(
               saving.pathImage,
             ),
+            colorFilter: !saving.isDone
+                ? const ColorFilter.mode(
+                    Colors.transparent,
+                    BlendMode.multiply,
+                  )
+                : const ColorFilter.mode(
+                    Colors.grey,
+                    BlendMode.saturation,
+                  ),
             fit: BoxFit.cover,
           ),
           borderRadius: const BorderRadius.all(
@@ -81,7 +90,10 @@ class SavingCard extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              formatCurrency(saving.savingAmount),
+                              saving.isDone
+                                  ? "COMPLETED"
+                                  : AppHelper.formatCurrency(
+                                      saving.savingAmount),
                               style: headingMediumTextStyle.copyWith(
                                 color: whiteColor,
                                 fontWeight: semibold,
@@ -99,7 +111,7 @@ class SavingCard extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  formatCurrency(saving.targetAmount),
+                                  AppHelper.formatCurrency(saving.targetAmount),
                                   style: headingSmallTextStyle.copyWith(
                                     color: whiteColor,
                                     fontWeight: medium,
@@ -129,8 +141,8 @@ class SavingCard extends StatelessWidget {
                         )
                       ],
                     ),
-                    const SavingsTypeLable(
-                      savingsType: "savings_record",
+                    SavingsTypeLable(
+                      savingsType: saving.savingType,
                     )
                   ],
                 ),

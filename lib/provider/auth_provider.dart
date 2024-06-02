@@ -43,7 +43,7 @@ class AuthProvider with ChangeNotifier {
     void Function(dynamic)? errorCallback,
   }) async {
     try {
-      log("COKK");
+      log("LOG TOKEN");
       UserModel user = await AuthService()
           .authWithToken((await tokenRepository.getToken())!);
       _user = user;
@@ -106,32 +106,82 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> reqCode({
+  Future<bool> reqCode({
     required String email,
+    bool? isForgotPassword,
+    void Function(dynamic)? errorCallback,
   }) async {
     try {
       await AuthService().reqCode(
+        isForgotPassword: isForgotPassword ?? false,
         email: email,
       );
+      return true;
       // return true;
     } catch (e) {
+      errorCallback?.call(e);
       print(e);
-      // return false;
+      return false;
     }
   }
 
-  Future<void> checkAuthenticationStatus(BuildContext context) async {
-    bool isLoggedIn = await tokenRepository.getToken() != null;
-    if (isLoggedIn) {
-      try {
-        authWithToken();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
-      } catch (e) {
-        print(e.toString());
-      }
-      // Jika pengguna sudah login, arahkan ke HomePage
+  Future<bool> logout({
+    UserModel? user,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      log(" TOKEN LOGOUT ${await tokenRepository.getToken()}");
+      await AuthService().logout(
+        user: user,
+        token: (await tokenRepository.getToken())!,
+      );
+      _user = null;
+      tokenRepository.clearToken();
+      return true;
+    } catch (e) {
+      errorCallback?.call(e);
+      print(e);
+      return false;
+    }
+  }
+
+  Future<bool> checkCodeForgotPassword({
+    required String code,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      await AuthService().checkCodePassword(
+        code: code,
+      );
+      return true;
+    } on SocketException {
+      errorCallback?.call("No Internet Connection");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      return false;
+    }
+  }
+
+  Future<bool> createNewPassword({
+    required String code,
+    required String password,
+    required String confirmationPassword,
+    void Function(dynamic)? errorCallback,
+  }) async {
+    try {
+      await AuthService().createNewPassword(
+        code: code,
+        password: password,
+        confirmationPassword: confirmationPassword,
+      );
+      return true;
+    } on SocketException {
+      errorCallback?.call("No Internet Connection");
+      return false;
+    } catch (e) {
+      errorCallback?.call(e);
+      return false;
     }
   }
 }

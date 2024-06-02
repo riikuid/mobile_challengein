@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_challengein/common/format_currency.dart';
-import 'package:mobile_challengein/common/format_date.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:mobile_challengein/model/savings_model.dart';
+import 'package:mobile_challengein/pages/savings/edit_saving_page.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
-import 'package:mobile_challengein/widget/custom_switch.dart';
+import 'package:mobile_challengein/widget/delete_alert.dart';
 import 'package:mobile_challengein/widget/main_history_tile.dart';
 import 'package:mobile_challengein/widget/main_history_tile_skeleton.dart';
-import 'package:mobile_challengein/widget/saving_hitory_tile.dart';
-import 'package:mobile_challengein/widget/savings_record_modal.dart';
+import 'package:mobile_challengein/widget/modal/savings_wallet_modal.dart';
+import 'package:mobile_challengein/widget/modal/savings_record_modal.dart';
 import 'package:mobile_challengein/widget/throw_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -16,6 +18,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/primary_button.dart';
 import 'package:mobile_challengein/widget/savings_label.dart';
+import 'dart:math' as math;
 
 class DetailSavingPage extends StatefulWidget {
   final SavingModel saving;
@@ -40,18 +43,30 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
   bool lastStatus = true;
   double height = 330;
   String errorText = "Failed to delete saving";
+  String errorChangeReminder = "Failed to update status reminder";
   late Future<void> futureGetHistories;
+
+  Future<void> _showAlertDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+
+      builder: (BuildContext context) {
+        return DeleteAlert(
+          onTapDelete: handleDeleteSaving,
+        );
+      },
+    );
+  }
 
   Future<void> _onRefresh() async {
     await savingProvider.refreshGetHistory(
-      token: authProvider.user.refreshToken,
       idSaving: widget.saving.id,
     );
   }
 
   Future<void> getRecentHistory() async {
     await savingProvider.refreshGetHistory(
-      token: authProvider.user.refreshToken,
       idSaving: widget.saving.id,
     );
   }
@@ -68,7 +83,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
     }
   }
 
-  Future<void> handleDeleteSaving() async {
+  Future<bool> handleDeleteSaving() async {
     await savingProvider
         .deleteSaving(
       idSaving: widget.saving.id,
@@ -82,10 +97,14 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
         .then((value) {
       if (value) {
         Navigator.pop(context);
+        Navigator.pop(context);
       } else {
+        Navigator.pop(context);
         ThrowSnackbar().showError(context, errorText);
       }
+      // return value;
     });
+    return true;
   }
 
   @override
@@ -93,10 +112,10 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
     switchValue = widget.saving.isReminder;
-    savingProvider.refreshGetHistory(
-      token: authProvider.user.refreshToken,
-      idSaving: widget.saving.id,
-    );
+    // savingProvider.refreshGetHistory(
+    //   token: authProvider.user.refreshToken,
+    //   idSaving: widget.saving.id,
+    // );
     _scrollController.addListener(onScroll);
     futureGetHistories = _onRefresh();
   }
@@ -111,7 +130,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
   }
 
   String fillingPlanFormating(int fillingNominal, String frequency) {
-    String result = "${formatCurrency(fillingNominal)} Per ";
+    String result = "${AppHelper.formatCurrency(fillingNominal)} Per ";
     String freequency = "";
     switch (widget.saving.fillingFrequency) {
       case "daily":
@@ -128,25 +147,208 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
     return result + freequency;
   }
 
-  void _showModalBottomSheet(BuildContext context,
-      SavingsRecordModalType modalType, SavingModel selectedSaving) {
-    showModalBottomSheet<void>(
-      isScrollControlled: true,
-      isDismissible: false,
-      shape: const ContinuousRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.0),
-          topRight: Radius.circular(20.0),
+  void _showModalBottomSheet() {}
+
+  Widget updateBalanceSavingRecord(
+    BuildContext context,
+    SavingModel selectedSaving,
+  ) {
+    return Row(
+      children: [
+        Expanded(
+          child: PrimaryButton(
+            isEnabled: !widget.saving.isDone,
+            color: widget.saving.isDone ? disabledColor : primaryColor500,
+            onPressed: () {
+              showModalBottomSheet<void>(
+                isScrollControlled: true,
+                isDismissible: false,
+                shape: const ContinuousRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                backgroundColor: Colors.white,
+                context: context,
+                builder: (BuildContext context) {
+                  return SavingsRecordModal(
+                    saving: selectedSaving,
+                    modalType: SavingsRecordModalType.increase,
+                  );
+                },
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add,
+                  color: whiteColor,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  "Increase",
+                  style: headingSmallTextStyle.copyWith(
+                    color: whiteColor,
+                    fontWeight: semibold,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
-      backgroundColor: Colors.white,
-      context: context,
-      builder: (BuildContext context) {
-        return SavingsRecordModal(
-          saving: selectedSaving,
-          modalType: modalType,
-        );
-      },
+        const SizedBox(
+          width: 10,
+        ),
+        Expanded(
+          child: PrimaryButton(
+            isEnabled: !widget.saving.isDone,
+            color: widget.saving.isDone ? disabledColor : primaryColor500,
+            onPressed: () {
+              showModalBottomSheet<void>(
+                isScrollControlled: true,
+                isDismissible: false,
+                shape: const ContinuousRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                backgroundColor: Colors.white,
+                context: context,
+                builder: (BuildContext context) {
+                  return SavingsRecordModal(
+                    saving: selectedSaving,
+                    modalType: SavingsRecordModalType.decrease,
+                  );
+                },
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.logout,
+                  color: whiteColor,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Decrease",
+                  style: headingSmallTextStyle.copyWith(
+                    color: whiteColor,
+                    fontWeight: semibold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget updateBalanceWalletSaving(
+    BuildContext context,
+    SavingModel selectedSaving,
+  ) {
+    return Row(
+      children: [
+        Expanded(
+          child: PrimaryButton(
+            onPressed: () {
+              showModalBottomSheet<void>(
+                isScrollControlled: true,
+                isDismissible: false,
+                shape: const ContinuousRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                backgroundColor: Colors.white,
+                context: context,
+                builder: (BuildContext context) {
+                  return SavingsWalletModal(
+                    saving: selectedSaving,
+                    modalType: SavingsWalletModalType.topup,
+                  );
+                },
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add,
+                  color: whiteColor,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  "Top Up",
+                  style: headingSmallTextStyle.copyWith(
+                    color: whiteColor,
+                    fontWeight: semibold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Expanded(
+          child: PrimaryButton(
+            onPressed: () {
+              showModalBottomSheet<void>(
+                isScrollControlled: true,
+                isDismissible: false,
+                shape: const ContinuousRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                backgroundColor: Colors.white,
+                context: context,
+                builder: (BuildContext context) {
+                  return SavingsWalletModal(
+                    saving: selectedSaving,
+                    modalType: SavingsWalletModalType.withdraw,
+                  );
+                },
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  "assets/icon/icon_send.svg",
+                  height: 16,
+                  // color: whiteColor,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Withdraw",
+                  style: headingSmallTextStyle.copyWith(
+                    color: whiteColor,
+                    fontWeight: semibold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -193,84 +395,80 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
     }
 
     Widget appbarBackground(SavingModel selectedSaving) {
-      return Hero(
-        tag: "image_savings",
-        child: Container(
-          padding: const EdgeInsets.only(bottom: 30, top: 60),
-          width: screenSize.width,
-          // height: screenSize.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(
-                selectedSaving.pathImage,
-              ),
-              colorFilter: ColorFilter.mode(
-                  blackColor.withOpacity(0.5), BlendMode.multiply),
-              fit: BoxFit.cover,
+      return Container(
+        padding: const EdgeInsets.only(bottom: 30, top: 60),
+        width: screenSize.width,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(
+              selectedSaving.pathImage,
             ),
+            colorFilter: ColorFilter.mode(
+                blackColor.withOpacity(0.5), BlendMode.multiply),
+            fit: BoxFit.cover,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 200,
-                child: SfRadialGauge(
-                  axes: <RadialAxis>[
-                    RadialAxis(
-                      minimum: 0,
-                      maximum: 100,
-                      showLabels: false,
-                      showTicks: false,
-                      axisLineStyle: AxisLineStyle(
-                        thickness: 0.2,
-                        cornerStyle: CornerStyle.bothCurve,
-                        color: whiteColor.withOpacity(0.3),
-                        thicknessUnit: GaugeSizeUnit.factor,
-                      ),
-                      pointers: <GaugePointer>[
-                        RangePointer(
-                          color: primaryColor400,
-                          value: selectedSaving.progressSavings * 100,
-                          cornerStyle: CornerStyle.bothCurve,
-                          width: 0.2,
-                          sizeUnit: GaugeSizeUnit.factor,
-                        )
-                      ],
-                      annotations: <GaugeAnnotation>[
-                        GaugeAnnotation(
-                          positionFactor: 0.1,
-                          angle: 90,
-                          widget: Text(
-                            '${(selectedSaving.progressSavings * 100).toStringAsFixed(0)}%',
-                            style: headingExtraLargeTextStyle.copyWith(
-                              fontSize: 40,
-                              fontWeight: semibold,
-                              color: whiteColor,
-                            ),
-                          ),
-                        )
-                      ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 200,
+              child: SfRadialGauge(
+                axes: <RadialAxis>[
+                  RadialAxis(
+                    minimum: 0,
+                    maximum: 100,
+                    showLabels: false,
+                    showTicks: false,
+                    axisLineStyle: AxisLineStyle(
+                      thickness: 0.2,
+                      cornerStyle: CornerStyle.bothCurve,
+                      color: whiteColor.withOpacity(0.3),
+                      thicknessUnit: GaugeSizeUnit.factor,
                     ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Text(
-                  widget.saving.goalName,
-                  textAlign: TextAlign.center,
-                  style: headingLargeTextStyle.copyWith(
-                    color: whiteColor,
-                    fontWeight: semibold,
+                    pointers: <GaugePointer>[
+                      RangePointer(
+                        color: primaryColor400,
+                        value: selectedSaving.progressSavings * 100,
+                        cornerStyle: CornerStyle.bothCurve,
+                        width: 0.2,
+                        sizeUnit: GaugeSizeUnit.factor,
+                      )
+                    ],
+                    annotations: <GaugeAnnotation>[
+                      GaugeAnnotation(
+                        positionFactor: 0.1,
+                        angle: 90,
+                        widget: Text(
+                          '${(selectedSaving.progressSavings * 100).toStringAsFixed(0)}%',
+                          style: headingExtraLargeTextStyle.copyWith(
+                            fontSize: 40,
+                            fontWeight: semibold,
+                            color: whiteColor,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Text(
+                widget.saving.goalName,
+                textAlign: TextAlign.center,
+                style: headingLargeTextStyle.copyWith(
+                  color: whiteColor,
+                  fontWeight: semibold,
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              SavingsTypeLable(savingsType: widget.saving.savingType),
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            SavingsTypeLable(savingsType: widget.saving.savingType),
+          ],
         ),
       );
     }
@@ -294,7 +492,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                 ),
               ),
               Text(
-                formatCurrency(savingAmount),
+                AppHelper.formatCurrency(savingAmount),
                 style: headingLargeTextStyle.copyWith(
                   color: blackColor,
                   fontWeight: semibold,
@@ -315,7 +513,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                     width: 5,
                   ),
                   Text(
-                    formatCurrency(targetAmount),
+                    AppHelper.formatCurrency(targetAmount),
                     style: paragraphNormalTextStyle.copyWith(
                       color: subtitleTextColor,
                       fontWeight: medium,
@@ -326,73 +524,9 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
               const SizedBox(
                 height: 20,
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: PrimaryButton(
-                      onPressed: () {
-                        _showModalBottomSheet(
-                          context,
-                          SavingsRecordModalType.increase,
-                          selectedSaving,
-                        );
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add,
-                            color: whiteColor,
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            "Increase",
-                            style: headingSmallTextStyle.copyWith(
-                              color: whiteColor,
-                              fontWeight: semibold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: PrimaryButton(
-                      onPressed: () {
-                        _showModalBottomSheet(
-                          context,
-                          SavingsRecordModalType.decrease,
-                          selectedSaving,
-                        );
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.logout,
-                            color: whiteColor,
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            "Decrease",
-                            style: headingSmallTextStyle.copyWith(
-                              color: whiteColor,
-                              fontWeight: semibold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              )
+              widget.saving.savingType == SavingType.record
+                  ? updateBalanceSavingRecord(context, selectedSaving)
+                  : updateBalanceWalletSaving(context, selectedSaving),
             ],
           ),
         ),
@@ -406,6 +540,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
       required int fillingEstimation,
       required String timeReminder,
       required List<String> dayReminder,
+      required bool switchValueSaving,
     }) {
       return ColoredBox(
         color: whiteColor,
@@ -417,7 +552,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
               fillingPlanRow(
                 Icons.date_range,
                 "Target Date",
-                formatDateToString(targetDate),
+                AppHelper.formatDateToString(targetDate),
               ),
               fillingPlanRow(
                 Icons.currency_exchange,
@@ -439,12 +574,16 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                     width: 35,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: primaryColor50,
+                        color: switchValueSaving
+                            ? primaryColor50
+                            : subtitleTextColor.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.alarm,
-                        color: primaryColor500,
+                        color: switchValueSaving
+                            ? primaryColor500
+                            : subtitleTextColor,
                       ),
                     ),
                   ),
@@ -458,12 +597,18 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                         Text(
                           timeReminder,
                           style: paragraphLargeTextStyle.copyWith(
+                            color: switchValueSaving
+                                ? blackColor
+                                : subtitleTextColor,
                             fontWeight: semibold,
                           ),
                         ),
                         Text(
                           dayReminder.join(", "),
                           style: paragraphSmallTextStyle.copyWith(
+                            color: switchValueSaving
+                                ? blackColor
+                                : subtitleTextColor,
                             fontWeight: regular,
                           ),
                         ),
@@ -473,16 +618,32 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                   const SizedBox(
                     width: 20,
                   ),
-                  CustomSwitch(
-                    value: switchValue,
-                    enableColor: primaryColor500,
-                    disableColor: disabledColor,
-                    onChanged: (value) {
-                      setState(() {
-                        switchValue = value;
-                      });
-                    },
-                  )
+                  // CustomSwitch(
+                  //   value: switchValueSaving,
+                  //   enableColor: primaryColor500,
+                  //   disableColor: disabledColor,
+                  //   onChanged: (value) async {
+                  //     await savingProvider
+                  //         .updateStatusReminder(
+                  //       changeTo: value,
+                  //       saving: widget.saving,
+                  //       errorCallback: (p0) => setState(() {
+                  //         errorChangeReminder = p0.toString();
+                  //       }),
+                  //     )
+                  //         .then((value) {
+                  //       if (value) {
+                  //         return;
+                  //       } else {
+                  //         ThrowSnackbar()
+                  //             .showError(context, errorChangeReminder);
+                  //       }
+                  //     });
+                  //     setState(() {
+                  //       switchValue = value;
+                  //     });
+                  //   },
+                  // )
                 ],
               )
             ],
@@ -546,7 +707,6 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
 
     return Consumer<SavingProvider>(
       builder: (context, savingProvider, _) {
-        print("Q Q Q Q Q QQQ");
         if (savingProvider.savings.isEmpty) {
           return Expanded(
             child: Center(
@@ -586,6 +746,15 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                         itemBuilder: (context) {
                           return [
                             PopupMenuItem<int>(
+                              onTap: () {
+                                // context.read<DashboardProvider>().setIndex(3);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditSavingPage(
+                                          saving: selectedeSaving),
+                                    ));
+                              },
                               value: 0,
                               child: Row(
                                 children: [
@@ -602,7 +771,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                               ),
                             ),
                             PopupMenuItem<int>(
-                              onTap: handleDeleteSaving,
+                              onTap: _showAlertDialog,
                               value: 1,
                               child: Row(
                                 children: [
@@ -638,13 +807,12 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                     expandedHeight: height,
                     flexibleSpace: FlexibleSpaceBar(
                       title: innerBoxIsScrolled
-                          ? Text(
-                              selectedeSaving.goalName,
-                              style: headingNormalTextStyle.copyWith(
+                          ? Text(selectedeSaving.goalName,
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
                                 color: whiteColor,
                                 fontWeight: semibold,
-                              ),
-                            )
+                              ))
                           : const SizedBox(),
                       background: appbarBackground(selectedeSaving),
                     ),
@@ -668,6 +836,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
                         frequency: selectedeSaving.fillingFrequency,
                         dayReminder: selectedeSaving.dayReminder,
                         timeReminder: selectedeSaving.timeReminder,
+                        switchValueSaving: selectedeSaving.isReminder,
                       ),
                       const SizedBox(
                         height: 10,

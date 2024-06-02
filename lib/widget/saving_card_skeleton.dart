@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/savings_label.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -103,7 +104,7 @@ class SavingCardSkeleton extends StatelessWidget {
                   ],
                 ),
                 const SavingsTypeLable(
-                  savingsType: "savings_record",
+                  savingsType: SavingType.record,
                 )
               ],
             ),

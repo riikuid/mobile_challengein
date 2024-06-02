@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mobile_challengein/model/user_model.dart';
-import 'package:mobile_challengein/pages/dashboard/dashboard.dart';
+import 'package:mobile_challengein/pages/auth/sign_in_page.dart';
+import 'package:mobile_challengein/pages/savings/create_saving_page.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
+import 'package:mobile_challengein/provider/dashboard_provider.dart';
 import 'package:mobile_challengein/provider/history_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
@@ -12,6 +12,8 @@ import 'package:mobile_challengein/widget/home_savings_card.dart';
 import 'package:mobile_challengein/widget/home_user_savings_widget.dart';
 import 'package:mobile_challengein/widget/main_history_tile.dart';
 import 'package:mobile_challengein/widget/main_history_tile_skeleton.dart';
+import 'package:mobile_challengein/widget/primary_button.dart';
+import 'package:mobile_challengein/widget/throw_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,7 +25,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String errorGetSavingText = "Error to Get Saving";
+  String errorGetHistory = "No History Found";
   String errorToFetchUserSaving = "Error to Fetch User Saving";
+  String errorLogout = "Failed to Logout";
   bool isObscure = true;
 
   late AuthProvider authProvider =
@@ -46,6 +50,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<void> handleLogout() async {
+    bool logoutStatus = await authProvider.logout(
+      user: user,
+      errorCallback: (p0) => setState(() {
+        errorLogout = p0.toString();
+      }),
+    );
+    if (logoutStatus) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignInPage(),
+          ));
+    } else {
+      ThrowSnackbar().showError(context, errorLogout);
+    }
+  }
+
   Future<void> getRecentHistory() async {
     await historyProvider.refreshGetHistory();
   }
@@ -63,7 +85,12 @@ class _HomePageState extends State<HomePage> {
       return ColoredBox(
         color: primaryColor500,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            40,
+            20,
+            20,
+          ),
           child: Column(
             children: [
               Row(
@@ -105,11 +132,13 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  Icon(
-                    Icons.notifications,
-                    color: whiteColor,
-                    size: 25,
-                  )
+                  IconButton(
+                      onPressed: handleLogout,
+                      icon: Icon(
+                        Icons.exit_to_app,
+                        color: whiteColor,
+                        size: 25,
+                      ))
                 ],
               ),
               const SizedBox(
@@ -150,13 +179,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Dashboard(
-                            dashboardValue: 1,
-                          ),
-                        )),
+                    onTap: () {
+                      context.read<DashboardProvider>().setIndex(1);
+                      // Kembali ke Dashboard dengan menghapus semua rute sebelumnya
+                      // Navigator.pushAndRemoveUntil(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => Dashboard()),
+                      //   (Route<dynamic> route) => false,
+                      // );
+                    },
                     child: Text(
                       "SEE ALL",
                       style: labelNormalTextStyle.copyWith(
@@ -196,39 +227,63 @@ class _HomePageState extends State<HomePage> {
                       );
                     } else {
                       return Consumer<SavingProvider>(
-                          builder: (context, savingProvider, _) {
-                        if (savingProvider.savings.isEmpty) {
-                          return Center(
-                            child: Text(
-                              errorGetSavingText,
-                              style: primaryTextStyle.copyWith(
-                                color: subtitleTextColor,
-                              ),
-                            ),
-                          );
-                        } else {
-                          return RefreshIndicator(
-                              onRefresh: () {
-                                return Future.delayed(
-                                    const Duration(seconds: 1), () {
-                                  setState(() {
-                                    getAllSavings();
-                                  });
-                                });
-                              },
-                              color: secondaryColor500,
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: savingProvider.savings
-                                      .map((item) => HomeSavingsCard(
-                                            saving: item,
-                                          ))
-                                      .toList(),
+                        builder: (context, savingProvider, _) {
+                          if (savingProvider.savings.isEmpty) {
+                            return Center(
+                              child: PrimaryButton(
+                                onPressed: () {
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) =>
+                                  //         const CreateSavingPage(
+                                  //       savingType: "savings_record",
+                                  //     ),
+                                  //   ),
+                                  // );
+                                },
+                                width: 120,
+                                height: 30,
+                                child: Text(
+                                  "Add New Saving",
+                                  style: primaryTextStyle.copyWith(
+                                    fontSize: 10,
+                                    fontWeight: semibold,
+                                    color: whiteColor,
+                                  ),
                                 ),
-                              ));
-                        }
-                      });
+                              ),
+                              // child: Text(
+                              //   errorGetSavingText,
+                              //   style: primaryTextStyle.copyWith(
+                              //     color: subtitleTextColor,
+                              //   ),
+                              // ),
+                            );
+                          } else {
+                            return RefreshIndicator(
+                                onRefresh: () {
+                                  return Future.delayed(
+                                      const Duration(seconds: 1), () {
+                                    setState(() {
+                                      getAllSavings();
+                                    });
+                                  });
+                                },
+                                color: secondaryColor500,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: savingProvider.savings
+                                        .map((item) => HomeSavingsCard(
+                                              saving: item,
+                                            ))
+                                        .toList(),
+                                  ),
+                                ));
+                          }
+                        },
+                      );
                     }
                   }),
             ),
@@ -257,11 +312,16 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: medium,
                     ),
                   ),
-                  Text(
-                    "SEE ALL",
-                    style: labelNormalTextStyle.copyWith(
-                      color: primaryColor500,
-                      fontWeight: medium,
+                  GestureDetector(
+                    onTap: () {
+                      context.read<DashboardProvider>().setIndex(2);
+                    },
+                    child: Text(
+                      "SEE ALL",
+                      style: labelNormalTextStyle.copyWith(
+                        color: primaryColor500,
+                        fontWeight: medium,
+                      ),
                     ),
                   ),
                 ],
@@ -286,7 +346,7 @@ class _HomePageState extends State<HomePage> {
                     } else if (snapshot.hasError) {
                       return Center(
                         child: Text(
-                          errorGetSavingText,
+                          errorGetHistory,
                           style: primaryTextStyle.copyWith(
                             color: subtitleTextColor,
                           ),
@@ -298,7 +358,7 @@ class _HomePageState extends State<HomePage> {
                         if (savingProvider.histories.isEmpty) {
                           return Center(
                             child: Text(
-                              errorGetSavingText,
+                              errorGetHistory,
                               style: primaryTextStyle.copyWith(
                                 color: subtitleTextColor,
                               ),

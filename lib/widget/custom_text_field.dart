@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
+import 'package:el_tooltip/el_tooltip.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,6 +29,10 @@ class CustomTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final TextStyle? style;
   final TextStyle? hintStyle;
+  final bool? enableTooltip;
+  final bool? enableError;
+  final String? errorText;
+
   final CustomTextFieldType? textFieldType;
 
   const CustomTextField({
@@ -51,7 +56,10 @@ class CustomTextField extends StatelessWidget {
     this.focusNode,
     this.style,
     this.hintStyle,
+    this.errorText = "Can not be empty",
+    this.enableTooltip = false,
     this.textFieldType = CustomTextFieldType.underline,
+    this.enableError = false,
   });
 
   @override
@@ -60,11 +68,34 @@ class CustomTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         labelText!.isNotEmpty
-            ? Text(
-                labelText!,
-                style: labelLargeTextStyle.copyWith(
-                  fontWeight: semibold,
-                ),
+            ? Row(
+                children: [
+                  Text(
+                    labelText!,
+                    style: labelLargeTextStyle.copyWith(
+                      fontWeight: semibold,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  enableTooltip!
+                      ? Tooltip(
+                          exitDuration: const Duration(seconds: 2),
+                          textStyle: labelSmallTextStyle.copyWith(
+                            fontSize: 12,
+                            color: whiteColor,
+                          ),
+                          message:
+                              "Password must:\n- Be between 9 and 64 character\n- Have one number\n- Have one uppercase character\n- Have one special character",
+                          child: Icon(
+                            Icons.info_outline,
+                            size: 14,
+                            color: subtitleTextColor,
+                          ),
+                        )
+                      : const SizedBox(),
+                ],
               )
             : const SizedBox(
                 height: 0,
@@ -102,8 +133,29 @@ class CustomTextField extends StatelessWidget {
             style: style ?? paragraphNormalTextStyle,
             textInputAction: textInputAction,
             decoration: InputDecoration(
+              error: enableError! ? Text(errorText!) : null,
+              errorBorder: enableError!
+                  ? textFieldType == CustomTextFieldType.underline
+                      ? const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                          ),
+                        )
+                      : const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(8.0),
+                          ),
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                          ),
+                        )
+                  : null,
               hoverColor: Colors.red,
-              contentPadding: EdgeInsets.zero,
+              contentPadding: textFieldType == CustomTextFieldType.underline
+                  ? EdgeInsets.zero
+                  : const EdgeInsets.symmetric(
+                      horizontal: 10,
+                    ),
               hintText: hintText,
               hintStyle: hintStyle ??
                   paragraphNormalTextStyle.copyWith(
@@ -117,7 +169,7 @@ class CustomTextField extends StatelessWidget {
                     )
                   : OutlineInputBorder(
                       borderRadius: const BorderRadius.all(
-                        Radius.circular(10.0),
+                        Radius.circular(8.0),
                       ),
                       borderSide: BorderSide(
                         color: disabledColor,
@@ -131,7 +183,7 @@ class CustomTextField extends StatelessWidget {
                     )
                   : OutlineInputBorder(
                       borderRadius: const BorderRadius.all(
-                        Radius.circular(10.0),
+                        Radius.circular(8.0),
                       ),
                       borderSide: BorderSide(
                         color: isPicker! ? disabledColor : primaryColor500,

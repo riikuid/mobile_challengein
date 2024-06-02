@@ -1,19 +1,23 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/model/history_model.dart';
 
 import 'package:mobile_challengein/theme.dart';
 
 class SavingHistoryTile extends StatelessWidget {
-  final String? type;
+  final HistoryModel? history;
   const SavingHistoryTile({
     Key? key,
-    this.type = "Top Up",
+    this.history,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     bool isTopUp = true;
-    if (type == "Withdraw") {
+
+    String iconPath = "assets/icon_";
+
+    if (history == "Withdraw") {
       isTopUp = false;
     }
 

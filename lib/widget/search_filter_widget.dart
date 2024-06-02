@@ -1,9 +1,17 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
 import 'package:mobile_challengein/theme.dart';
 
 class SearchFilterWidget extends StatelessWidget {
-  const SearchFilterWidget({super.key});
+  final String placeHolder;
+  final void Function(String) onChanged;
+  const SearchFilterWidget({
+    super.key,
+    required this.placeHolder,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +22,10 @@ class SearchFilterWidget extends StatelessWidget {
             // selectionHeightStyle: BoxHeightStyle.tight,
             style: paragraphNormalTextStyle.copyWith(),
             cursorColor: primaryColor500,
+            onChanged: onChanged,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(),
-              hintText: "Find Your History",
+              hintText: placeHolder,
               hintStyle: paragraphNormalTextStyle.copyWith(
                 color: hintTextColor,
               ),
@@ -50,46 +59,46 @@ class SearchFilterWidget extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(
-          width: 10,
-        ),
-        InkWell(
-          onTap: () {},
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(4.0),
-                ),
-                border: Border.all(
-                  color: hintTextColor,
-                ),
-                shape: BoxShape.rectangle,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.tune,
-                    size: 22,
-                    color: blackColor,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    "Filter",
-                    style: paragraphNormalTextStyle,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        // const SizedBox(
+        //   width: 10,
+        // ),
+        // InkWell(
+        //   onTap: () {},
+        //   child: Ink(
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(4),
+        //     ),
+        //     child: Container(
+        //       padding: const EdgeInsets.symmetric(horizontal: 12),
+        //       height: 48,
+        //       decoration: BoxDecoration(
+        //         borderRadius: const BorderRadius.all(
+        //           Radius.circular(4.0),
+        //         ),
+        //         border: Border.all(
+        //           color: hintTextColor,
+        //         ),
+        //         shape: BoxShape.rectangle,
+        //       ),
+        //       child: Row(
+        //         children: [
+        //           Icon(
+        //             Icons.tune,
+        //             size: 22,
+        //             color: blackColor,
+        //           ),
+        //           const SizedBox(
+        //             width: 5,
+        //           ),
+        //           Text(
+        //             "Filter",
+        //             style: paragraphNormalTextStyle,
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

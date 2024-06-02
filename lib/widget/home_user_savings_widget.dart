@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_challengein/common/format_currency.dart';
+import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:mobile_challengein/model/user_saving.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/home_status_tile.dart';
@@ -66,7 +66,7 @@ class _HomeUserSavingsWidgetState extends State<HomeUserSavingsWidget> {
             _isObscure
                 ? "Rp---"
                 : widget.userSaving != null
-                    ? formatCurrency(widget.userSaving!.savingsAmount)
+                    ? AppHelper.formatCurrency(widget.userSaving!.savingsAmount)
                     : "Loading",
             style: headingLargeTextStyle.copyWith(
               fontWeight: semibold,
@@ -84,7 +84,8 @@ class _HomeUserSavingsWidgetState extends State<HomeUserSavingsWidget> {
                   value: _isObscure
                       ? "Rp---"
                       : widget.userSaving != null
-                          ? formatCurrency(widget.userSaving!.walletSavings)
+                          ? AppHelper.formatCurrency(
+                              widget.userSaving!.walletSavings)
                           : "Loading",
                 ),
               ),
@@ -95,7 +96,8 @@ class _HomeUserSavingsWidgetState extends State<HomeUserSavingsWidget> {
                   value: _isObscure
                       ? "Rp---"
                       : widget.userSaving != null
-                          ? formatCurrency(widget.userSaving!.savingsRecord)
+                          ? AppHelper.formatCurrency(
+                              widget.userSaving!.savingsRecord)
                           : "Loading",
                 ),
               ),

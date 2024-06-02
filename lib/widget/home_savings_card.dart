@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:mobile_challengein/common/format_currency.dart';
+import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:mobile_challengein/model/savings_model.dart';
 
 import 'package:mobile_challengein/pages/savings/detail_saving_page.dart';
@@ -43,27 +43,33 @@ class HomeSavingsCard extends StatelessWidget {
           children: [
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: Hero(
-                tag: "image_savings",
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: greyBackgroundColor,
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(5.0),
-                    ),
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        saving.pathImage,
-                      ),
-                      fit: BoxFit.cover,
-                    ),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: greyBackgroundColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(5.0),
                   ),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: SavingsTypeLable(
-                      savingsType: saving.savingType,
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      saving.pathImage,
                     ),
+                    colorFilter: !saving.isDone
+                        ? const ColorFilter.mode(
+                            Colors.transparent,
+                            BlendMode.multiply,
+                          )
+                        : const ColorFilter.mode(
+                            Colors.grey,
+                            BlendMode.saturation,
+                          ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: SavingsTypeLable(
+                    savingsType: saving.savingType,
                   ),
                 ),
               ),
@@ -87,7 +93,9 @@ class HomeSavingsCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        formatCurrency(saving.savingAmount),
+                        saving.isDone
+                            ? "COMPLETED"
+                            : AppHelper.formatCurrency(saving.savingAmount),
                         style: headingNormalTextStyle.copyWith(
                           fontWeight: semibold,
                         ),

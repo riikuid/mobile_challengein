@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_challengein/common/format_currency.dart';
+import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
@@ -54,7 +54,6 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
             amount: amount.toString(),
             idSaving: widget.saving.id,
             updateType: widget.modalType.name,
-            token: authProvider.user.refreshToken,
             errorCallback: (error) {
               errorText = error.toString();
             },
@@ -183,7 +182,7 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                 height: 10,
               ),
               Text(
-                'Balance ${formatCurrency(widget.saving.savingAmount)}',
+                'Balance ${AppHelper.formatCurrency(widget.saving.savingAmount)}',
                 style: labelSmallTextStyle.copyWith(
                   fontSize: 12,
                   fontWeight: regular,

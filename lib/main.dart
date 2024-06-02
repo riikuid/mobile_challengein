@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_challengein/firebase_options.dart';
 import 'package:mobile_challengein/pages/auth/auth_wrapper.dart';
-import 'package:mobile_challengein/pages/auth/sign_in_page.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
+import 'package:mobile_challengein/provider/dashboard_provider.dart';
 import 'package:mobile_challengein/provider/history_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +31,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => SavingProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => DashboardProvider(),
+        ),
         ChangeNotifierProxyProvider<SavingProvider, HistoryProvider>(
           update: (context, value, previous) {
             if (previous == null) {
@@ -46,6 +49,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),

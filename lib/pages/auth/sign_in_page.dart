@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile_challengein/pages/auth/activation_page.dart';
+import 'package:mobile_challengein/pages/auth/forgot_password_page.dart';
 import 'package:mobile_challengein/pages/auth/sign_up_page.dart';
 import 'package:mobile_challengein/pages/dashboard/dashboard.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
@@ -73,7 +74,7 @@ class _SignInPageState extends State<SignInPage> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (context) => const Dashboard(),
+              builder: (context) => Dashboard(),
             ),
             (route) => false,
           );
@@ -172,11 +173,21 @@ class _SignInPageState extends State<SignInPage> {
               ),
               Align(
                 alignment: Alignment.topRight,
-                child: Text(
-                  "Forgot Password?",
-                  style: labelLargeTextStyle.copyWith(
-                    height: 4,
-                    color: subtitleTextColor,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordPage(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "Forgot Password?",
+                    style: labelLargeTextStyle.copyWith(
+                      height: 4,
+                      color: subtitleTextColor,
+                    ),
                   ),
                 ),
               ),
@@ -187,7 +198,7 @@ class _SignInPageState extends State<SignInPage> {
                 isLoading: _isLoading,
                 onPressed: handleLogin,
                 child: Text(
-                  "SIGN IN",
+                  "SEND CODE",
                   style: headingNormalTextStyle.copyWith(
                     color: whiteColor,
                   ),

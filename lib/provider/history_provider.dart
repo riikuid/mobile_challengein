@@ -14,6 +14,8 @@ class HistoryProvider with ChangeNotifier {
   int _page = 1;
   bool hasMore = true;
 
+  bool serviceLoading = false;
+
   final HistoryService _historyService = HistoryService();
 
   Future getHistory({
@@ -44,11 +46,15 @@ class HistoryProvider with ChangeNotifier {
   }
 
   Future refreshGetHistory() async {
+    // serviceLoading = true;
+    // notifyListeners();
+
     _page = 1;
     _histories = [];
     hasMore = true;
 
     await getHistory(token: (await tokenRepository.getToken())!);
+    serviceLoading = false;
     notifyListeners();
   }
 }

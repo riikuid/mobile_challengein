@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:mobile_challengein/model/savings_model.dart';
+
 String savingRequestToJson(SavingRequest data) => json.encode(data.toJson());
 
 class SavingRequest {
@@ -9,11 +11,10 @@ class SavingRequest {
   final String fillingNominal;
   final String fillingFrequency;
   final List<String> dayReminder;
-  final String savingType;
+  final SavingType savingType;
   final int isReminder;
   final String timeReminder;
   final String fillingType;
-  final String? pathImage;
 
   SavingRequest({
     required this.goalName,
@@ -26,7 +27,6 @@ class SavingRequest {
     required this.isReminder,
     required this.timeReminder,
     required this.fillingType,
-    this.pathImage,
   });
 
   Map<String, String> toJson() => {
@@ -37,10 +37,11 @@ class SavingRequest {
         "filling_nominal": fillingNominal,
         "filling_frequency": fillingFrequency.toLowerCase(),
         "day_reminder": jsonEncode(dayReminder),
-        "saving_type": savingType,
+        "saving_type": savingType == SavingType.record
+            ? "savings_record"
+            : "wallet_savings",
         "is_reminder": isReminder.toString(),
         "time_reminder": timeReminder,
         "filling_type": fillingType,
-        "path_image": pathImage ?? "",
       };
 }
