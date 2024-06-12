@@ -12,6 +12,10 @@ class HistoryService {
     required String token,
     required int page,
     required int limit,
+    required String typeTrx,
+    required String statusTrx,
+    required String startDate,
+    required String endDate,
     String idSavings = '',
   }) async {
     var url = '$baseUrl/auth/history/savings?id=$idSavings';
@@ -22,6 +26,10 @@ class HistoryService {
     var body = {
       'limit': limit.toString(),
       'page': page.toString(),
+      'type_trx': typeTrx,
+      'status_trx': statusTrx,
+      "start_date": startDate,
+      "end_date": endDate,
     };
 
     final response = await http.post(

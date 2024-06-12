@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_challengein/common/app_helper.dart';
 
 import 'package:mobile_challengein/model/history_model.dart';
+import 'package:mobile_challengein/pages/savings/detail_history_page.dart';
 import 'package:mobile_challengein/theme.dart';
 
 class MainHistoryTile extends StatelessWidget {
@@ -14,100 +15,111 @@ class MainHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 10.0,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      history.pathImage,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailHistoryPage(
+                history: history,
+              ),
+            ));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 10.0,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        history.pathImage,
+                      ),
+                      fit: BoxFit.cover,
                     ),
-                    fit: BoxFit.cover,
+                    color: subtitleTextColor,
+                    shape: BoxShape.circle,
                   ),
-                  color: subtitleTextColor,
-                  shape: BoxShape.circle,
                 ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    history.typeTrx,
-                    style: labelLargeTextStyle.copyWith(
-                      color: blackColor,
-                      fontWeight: medium,
+                const SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      history.typeTrx,
+                      style: labelLargeTextStyle.copyWith(
+                        color: blackColor,
+                        fontWeight: medium,
+                      ),
                     ),
-                  ),
+                    const SizedBox(
+                      height: 3,
+                    ),
+                    Text(
+                      AppHelper.formatDateToString(history.updatedAt),
+                      style: labelNormalTextStyle.copyWith(
+                        color: subtitleTextColor,
+                        fontWeight: medium,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  history.typeTrx == "Increase" || history.typeTrx == "Top Up"
+                      ? Text(
+                          "+${AppHelper.formatCurrency(history.amountMoney)}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: labelLargeTextStyle.copyWith(
+                            color: blackColor,
+                            fontWeight: medium,
+                          ),
+                        )
+                      : Text(
+                          "-${AppHelper.formatCurrency(history.amountMoney)}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: labelLargeTextStyle.copyWith(
+                            color: Colors.red,
+                            fontWeight: medium,
+                          ),
+                        ),
                   const SizedBox(
                     height: 3,
                   ),
                   Text(
-                    AppHelper.formatDateToString(history.updatedAt),
+                    history.statusTrx,
                     style: labelNormalTextStyle.copyWith(
-                      color: subtitleTextColor,
+                      color: history.statusTrx == "Success"
+                          ? greenLableColor
+                          : history.statusTrx == "Pending"
+                              ? orangeLableColor
+                              : Colors.red,
                       fontWeight: medium,
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                history.typeTrx == "Increase" || history.typeTrx == "Top Up"
-                    ? Text(
-                        "+${AppHelper.formatCurrency(history.amountMoney)}",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: labelLargeTextStyle.copyWith(
-                          color: blackColor,
-                          fontWeight: medium,
-                        ),
-                      )
-                    : Text(
-                        "-${AppHelper.formatCurrency(history.amountMoney)}",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: labelLargeTextStyle.copyWith(
-                          color: Colors.red,
-                          fontWeight: medium,
-                        ),
-                      ),
-                const SizedBox(
-                  height: 3,
-                ),
-                Text(
-                  history.statusTrx,
-                  style: labelNormalTextStyle.copyWith(
-                    color: history.statusTrx == "Success"
-                        ? greenLableColor
-                        : history.statusTrx == "Pending"
-                            ? orangeLableColor
-                            : Colors.red,
-                    fontWeight: medium,
-                  ),
-                ),
-              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

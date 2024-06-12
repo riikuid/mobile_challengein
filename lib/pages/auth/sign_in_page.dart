@@ -198,7 +198,7 @@ class _SignInPageState extends State<SignInPage> {
                 isLoading: _isLoading,
                 onPressed: handleLogin,
                 child: Text(
-                  "SEND CODE",
+                  "SIGN IN",
                   style: headingNormalTextStyle.copyWith(
                     color: whiteColor,
                   ),

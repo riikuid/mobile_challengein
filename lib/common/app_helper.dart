@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_challengein/theme.dart';
 
 class AppHelper {
   static TimeOfDay stringToTimeOfDay(String time) {
@@ -67,5 +68,24 @@ class AppHelper {
 
     // Combine them with '...' in between
     return '$start...$end';
+  }
+
+  static Color getColorBasedOnStatus(String status) {
+    status = status.toUpperCase(); // Case-insensitive comparison
+
+    switch (status) {
+      case 'SUCCESS':
+        return greenLableColor;
+      case 'PENDING':
+        return orangeLableColor;
+      case 'FAILED':
+        return redLableColor;
+      default:
+        return blackColor;
+    }
+  }
+
+  static String formatDatePostHistory(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date);
   }
 }

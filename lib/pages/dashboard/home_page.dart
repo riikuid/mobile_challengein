@@ -69,7 +69,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getRecentHistory() async {
-    await historyProvider.refreshGetHistory();
+    await historyProvider.refreshGetHistory(
+      statusTrx: "",
+      typeTrx: "",
+      startDate: "",
+      endDate: "",
+    );
   }
 
   @override

@@ -340,6 +340,10 @@ class SavingProvider with ChangeNotifier {
         limit: _limit,
         page: _page,
         idSavings: idSaving,
+        statusTrx: "",
+        typeTrx: "",
+        startDate: "",
+        endDate: "",
       );
 
       if (result.length < _limit) {

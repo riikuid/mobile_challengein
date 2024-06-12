@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
@@ -89,15 +90,14 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                 children: [
                   Row(
                     children: [
-                      Icon(
+                      SvgPicture.asset(
                         widget.modalType == SavingsRecordModalType.increase
-                            ? Icons.move_to_inbox
-                            : Icons.outbox,
-                        size: 40,
-                        color: primaryColor500,
+                            ? "assets/icon/icon_modal_increase.svg"
+                            : "assets/icon/icon_modal_decrease.svg",
+                        height: 35,
                       ),
                       const SizedBox(
-                        width: 5,
+                        width: 10,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

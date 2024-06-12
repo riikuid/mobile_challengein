@@ -36,6 +36,7 @@ Color secondaryColor900 = const Color(0xFF6A3242);
 
 Color greenLableColor = const Color(0xFF00D26E);
 Color orangeLableColor = const Color(0xFFFA9F3C);
+Color redLableColor = const Color(0xFFFB7375);
 
 // TEXT STYLE
 TextStyle primaryTextStyle = TextStyle(

@@ -40,7 +40,8 @@ class MyApp extends StatelessWidget {
               return HistoryProvider();
             }
             if (value.isOnTrx) {
-              previous.refreshGetHistory();
+              previous.refreshGetHistory(
+                  statusTrx: "", typeTrx: "", endDate: "", startDate: "");
               value.onDoneTrx();
             }
             return previous;

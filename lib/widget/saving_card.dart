@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -102,10 +103,10 @@ class SavingCard extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Icon(
-                                  Icons.savings,
-                                  color: whiteColor,
-                                  size: 14,
+                                SvgPicture.asset(
+                                  "assets/icon/icon_target.svg",
+                                  height: 16,
+                                  color: subtitleTextColor,
                                 ),
                                 const SizedBox(
                                   width: 5,
@@ -113,8 +114,8 @@ class SavingCard extends StatelessWidget {
                                 Text(
                                   AppHelper.formatCurrency(saving.targetAmount),
                                   style: headingSmallTextStyle.copyWith(
-                                    color: whiteColor,
-                                    fontWeight: medium,
+                                    color: subtitleTextColor,
+                                    fontWeight: semibold,
                                   ),
                                 ),
                               ],

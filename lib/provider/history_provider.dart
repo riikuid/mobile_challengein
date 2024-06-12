@@ -19,12 +19,21 @@ class HistoryProvider with ChangeNotifier {
   final HistoryService _historyService = HistoryService();
 
   Future getHistory({
-    required String token,
+    required String typeTrx,
+    required String statusTrx,
+    required String startDate,
+    required String endDate,
     void Function(dynamic)? errorCallback,
   }) async {
     try {
+      typeTrx = typeTrx.toLowerCase();
+      statusTrx = statusTrx.toLowerCase();
       List<HistoryModel> result = await _historyService.getHistory(
-        token: token,
+        startDate: startDate,
+        endDate: endDate,
+        typeTrx: typeTrx == "all" ? "" : typeTrx,
+        statusTrx: statusTrx == "all" ? "" : statusTrx,
+        token: (await tokenRepository.getToken())!,
         limit: _limit,
         page: _page,
       );
@@ -45,15 +54,23 @@ class HistoryProvider with ChangeNotifier {
     }
   }
 
-  Future refreshGetHistory() async {
-    // serviceLoading = true;
-    // notifyListeners();
-
+  Future refreshGetHistory({
+    required String typeTrx,
+    required String statusTrx,
+    required String startDate,
+    required String endDate,
+  }) async {
     _page = 1;
     _histories = [];
     hasMore = true;
+    // notifyListeners();
 
-    await getHistory(token: (await tokenRepository.getToken())!);
+    await getHistory(
+      startDate: startDate,
+      endDate: endDate,
+      typeTrx: typeTrx,
+      statusTrx: statusTrx,
+    );
     serviceLoading = false;
     notifyListeners();
   }

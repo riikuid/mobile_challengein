@@ -638,7 +638,7 @@ class _SavingsWalletModalState extends State<SavingsWalletModal>
               ),
               PrimaryButton(
                 isLoading: _isLoading,
-                isEnabled: _isValidWd,
+                // isEnabled: _isValidWd,
                 onPressed: handleSubmitWD,
                 child: Text(
                   "SUBMIT",

@@ -60,6 +60,7 @@ dependencies:
   permission_handler: ^11.3.1
   flutter_filter_dialog: ^1.2.0
   double_back_to_close_app: ^2.1.0
+  flutter_date_range_picker: ^0.1.1
 
 flutter_icons:
   android: "launcher_icon"

@@ -7,6 +7,7 @@ class HistoryModel {
   DateTime createdAt;
   DateTime updatedAt;
   String pathImage;
+  String goalName;
 
   HistoryModel({
     required this.id,
@@ -17,6 +18,7 @@ class HistoryModel {
     required this.createdAt,
     required this.updatedAt,
     required this.pathImage,
+    required this.goalName,
   });
 
   HistoryModel copyWith({
@@ -28,6 +30,7 @@ class HistoryModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? pathImage,
+    String? goalName,
   }) =>
       HistoryModel(
         id: id ?? this.id,
@@ -38,6 +41,7 @@ class HistoryModel {
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
         pathImage: pathImage ?? this.pathImage,
+        goalName: goalName ?? this.goalName,
       );
 
   factory HistoryModel.fromJson(Map<String, dynamic> json) => HistoryModel(
@@ -49,6 +53,7 @@ class HistoryModel {
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         pathImage: json["path_image"],
+        goalName: json["goal_name"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -60,5 +65,6 @@ class HistoryModel {
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "path_image": pathImage,
+        "goal_name": goalName,
       };
 }

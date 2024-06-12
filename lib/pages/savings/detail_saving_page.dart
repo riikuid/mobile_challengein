@@ -330,7 +330,8 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SvgPicture.asset(
-                  "assets/icon/icon_send.svg",
+                  "assets/icon/icon_cashout.svg",
+                  color: whiteColor,
                   height: 16,
                   // color: whiteColor,
                 ),
@@ -504,16 +505,21 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.savings,
+                  // Icon(
+                  //   Icons.savings,
+                  //   color: subtitleTextColor,
+                  //   size: 16,
+                  // ),
+                  SvgPicture.asset(
+                    "assets/icon/icon_target.svg",
+                    height: 18,
                     color: subtitleTextColor,
-                    size: 16,
                   ),
                   const SizedBox(
                     width: 5,
                   ),
                   Text(
-                    AppHelper.formatCurrency(targetAmount),
+                    AppHelper.formatCurrencyNominal(targetAmount),
                     style: paragraphNormalTextStyle.copyWith(
                       color: subtitleTextColor,
                       fontWeight: medium,
