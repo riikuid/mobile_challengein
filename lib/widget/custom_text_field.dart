@@ -86,8 +86,9 @@ class CustomTextField extends StatelessWidget {
                             fontSize: 12,
                             color: whiteColor,
                           ),
+                          triggerMode: TooltipTriggerMode.tap,
                           message:
-                              "Password must:\n- Be between 9 and 64 character\n- Have one number\n- Have one uppercase character\n- Have one special character",
+                              "Password must:\n- Be between 9 and 64 character\n- At least 1 number\n- At least 1 uppercase character",
                           child: Icon(
                             Icons.info_outline,
                             size: 14,

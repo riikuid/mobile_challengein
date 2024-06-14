@@ -231,7 +231,7 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.logout,
+                  Icons.trending_down,
                   color: whiteColor,
                 ),
                 const SizedBox(

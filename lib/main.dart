@@ -6,6 +6,7 @@ import 'package:mobile_challengein/pages/auth/auth_wrapper.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
 import 'package:mobile_challengein/provider/dashboard_provider.dart';
 import 'package:mobile_challengein/provider/history_provider.dart';
+import 'package:mobile_challengein/provider/inbox_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => DashboardProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => InboxProvider(),
         ),
         ChangeNotifierProxyProvider<SavingProvider, HistoryProvider>(
           update: (context, value, previous) {

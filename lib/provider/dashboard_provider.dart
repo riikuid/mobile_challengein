@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mobile_challengein/model/topup_model.dart';
 import 'package:mobile_challengein/pages/dashboard/history_page.dart';
 import 'package:mobile_challengein/pages/dashboard/home_page.dart';
-import 'package:mobile_challengein/pages/dashboard/profile_page.dart';
+import 'package:mobile_challengein/pages/dashboard/inbox_page.dart';
 import 'package:mobile_challengein/pages/dashboard/savings_page.dart';
 
 class DashboardProvider with ChangeNotifier {
@@ -25,11 +25,11 @@ class DashboardProvider with ChangeNotifier {
       SvgPicture.asset("assets/icon/icon_history_fill.svg"),
       const HistoryPage(),
     ],
-    // [
-    //   SvgPicture.asset("assets/icon/icon_profile.svg"),
-    //   SvgPicture.asset("assets/icon/icon_profile_fill.svg"),
-    //   const ProfilePage(),
-    // ],
+    [
+      SvgPicture.asset("assets/icon/icon_mail.svg"),
+      SvgPicture.asset("assets/icon/icon_mail_fill.svg"),
+      const InboxPage(),
+    ],
   ];
 
   int get currentIndex => _currentIndex;

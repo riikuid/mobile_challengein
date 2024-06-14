@@ -52,8 +52,25 @@ class _EditSavingPageState extends State<EditSavingPage> {
     }
   }
 
+  DateTime getDateToUse(DateTime dateValue, DateTime firstDate) {
+    if (dateValue.isAfter(firstDate)) {
+      return dateValue;
+    } else {
+      return firstDate.add(Duration(days: 1));
+    }
+  }
+
   // CHECKBOX DAY
-  List<String> selectedDay = ['Sunday'];
+  List<String> selectedDays = ['Sunday'];
+  List<String> dayOnWeek = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
 
   // SWITCH
   bool switchValue = false;
@@ -111,7 +128,7 @@ class _EditSavingPageState extends State<EditSavingPage> {
     dateController.text =
         AppHelper.formatDateToString(widget.saving.targetDate);
     dateValue = widget.saving.targetDate;
-    selectedDay = widget.saving.dayReminder;
+    selectedDays = widget.saving.dayReminder;
     resultNominal = widget.saving.fillingNominal;
     frequencyString = widget.saving.fillingFrequency[0].toUpperCase() +
         widget.saving.fillingFrequency.substring(1);
@@ -157,7 +174,7 @@ class _EditSavingPageState extends State<EditSavingPage> {
             targetDate: dateValue,
             fillingNominal: resultNominal.toString(),
             fillingFrequency: frequencyString,
-            dayReminder: selectedDay,
+            dayReminder: selectedDays,
             savingType: widget.saving.savingType,
             isReminder: switchValue ? 1 : 0,
             timeReminder: defaultTime.format(context),
@@ -345,7 +362,7 @@ class _EditSavingPageState extends State<EditSavingPage> {
                     pickerFunction: () async {
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
-                        initialDate: dateValue,
+                        initialDate: getDateToUse(dateValue, DateTime.now()),
                         firstDate: allowedSelectDate,
                         lastDate: DateTime(2050),
                         builder: (context, child) {
@@ -382,6 +399,17 @@ class _EditSavingPageState extends State<EditSavingPage> {
                       setState(() {
                         frequencyString = value!;
                         frequencyValue = getFrequencyValue(value);
+                        if (value == "Daily") {
+                          selectedDays = [
+                            'Sunday',
+                            'Monday',
+                            'Tuesday',
+                            'Wednesday',
+                            'Thursday',
+                            'Friday',
+                            'Saturday',
+                          ];
+                        }
                       });
                       if (targetAmountController.text.isNotEmpty) {
                         calculateResult();
@@ -412,7 +440,7 @@ class _EditSavingPageState extends State<EditSavingPage> {
                   ),
                   SetReminderWidget(
                     isActive: switchValue,
-                    selectedDays: selectedDay,
+                    selectedDays: selectedDays,
                     onSwitchPressed: (bool value) {
                       setState(() {
                         switchValue = value;
@@ -421,6 +449,71 @@ class _EditSavingPageState extends State<EditSavingPage> {
                     timeValue: defaultTime,
                     onTimePressed: () => displayTimePicker(context),
                   ),
+                  frequencyString == "Daily"
+                      ? SizedBox()
+                      : Wrap(
+                          spacing: 8.0, // Spasi horizontal antar item
+                          runSpacing: -8.0, // Spasi vertikal antar item
+                          children: List.generate(
+                            dayOnWeek.length,
+                            (index) {
+                              return TextButton(
+                                onPressed: switchValue
+                                    ? () {
+                                        setState(() {
+                                          if (selectedDays
+                                              .contains(dayOnWeek[index])) {
+                                            if (selectedDays.length > 1) {
+                                              selectedDays
+                                                  .remove(dayOnWeek[index]);
+                                            }
+                                          } else {
+                                            selectedDays.add(dayOnWeek[index]);
+                                          }
+                                          // selectedDay.add(dayOnWeek[index]);
+                                        });
+                                        debugPrint(selectedDays.toString());
+                                      }
+                                    : null,
+                                style: TextButton.styleFrom(
+                                  backgroundColor: switchValue
+                                      ? selectedDays.contains(dayOnWeek[index])
+                                          ? primaryColor50
+                                          : transparentColor
+                                      : transparentColor,
+                                  minimumSize: const Size(50, 30),
+                                  maximumSize: const Size(100, 30),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 0,
+                                  ),
+                                  side: BorderSide(
+                                    color: switchValue
+                                        ? selectedDays
+                                                .contains(dayOnWeek[index])
+                                            ? primaryColor500
+                                            : subtitleTextColor
+                                        : subtitleTextColor.withOpacity(0.5),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  dayOnWeek[index],
+                                  style: labelNormalTextStyle.copyWith(
+                                    color: switchValue
+                                        ? selectedDays
+                                                .contains(dayOnWeek[index])
+                                            ? primaryColor500
+                                            : subtitleTextColor
+                                        : subtitleTextColor.withOpacity(0.5),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                   const SizedBox(
                     height: 20,
                   ),

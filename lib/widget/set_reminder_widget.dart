@@ -92,65 +92,65 @@ class _SetReminderWidgetState extends State<SetReminderWidget> {
             ),
           ),
         ),
-        Wrap(
-          spacing: 8.0, // Spasi horizontal antar item
-          runSpacing: -8.0, // Spasi vertikal antar item
-          children: List.generate(
-            dayOnWeek.length,
-            (index) {
-              return TextButton(
-                onPressed: widget.isActive
-                    ? () {
-                        setState(() {
-                          if (widget.selectedDays.contains(dayOnWeek[index])) {
-                            if (widget.selectedDays.length > 1) {
-                              widget.selectedDays.remove(dayOnWeek[index]);
-                            }
-                          } else {
-                            widget.selectedDays.add(dayOnWeek[index]);
-                          }
-                          // selectedDay.add(dayOnWeek[index]);
-                        });
-                        debugPrint(widget.selectedDays.toString());
-                      }
-                    : null,
-                style: TextButton.styleFrom(
-                  backgroundColor: widget.isActive
-                      ? widget.selectedDays.contains(dayOnWeek[index])
-                          ? primaryColor50
-                          : transparentColor
-                      : transparentColor,
-                  minimumSize: const Size(50, 30),
-                  maximumSize: const Size(100, 30),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 0,
-                  ),
-                  side: BorderSide(
-                    color: widget.isActive
-                        ? widget.selectedDays.contains(dayOnWeek[index])
-                            ? primaryColor500
-                            : subtitleTextColor
-                        : subtitleTextColor.withOpacity(0.5),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                ),
-                child: Text(
-                  dayOnWeek[index],
-                  style: labelNormalTextStyle.copyWith(
-                    color: widget.isActive
-                        ? widget.selectedDays.contains(dayOnWeek[index])
-                            ? primaryColor500
-                            : subtitleTextColor
-                        : subtitleTextColor.withOpacity(0.5),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
+        // Wrap(
+        //   spacing: 8.0, // Spasi horizontal antar item
+        //   runSpacing: -8.0, // Spasi vertikal antar item
+        //   children: List.generate(
+        //     dayOnWeek.length,
+        //     (index) {
+        //       return TextButton(
+        //         onPressed: widget.isActive
+        //             ? () {
+        //                 setState(() {
+        //                   if (widget.selectedDays.contains(dayOnWeek[index])) {
+        //                     if (widget.selectedDays.length > 1) {
+        //                       widget.selectedDays.remove(dayOnWeek[index]);
+        //                     }
+        //                   } else {
+        //                     widget.selectedDays.add(dayOnWeek[index]);
+        //                   }
+        //                   // selectedDay.add(dayOnWeek[index]);
+        //                 });
+        //                 debugPrint(widget.selectedDays.toString());
+        //               }
+        //             : null,
+        //         style: TextButton.styleFrom(
+        //           backgroundColor: widget.isActive
+        //               ? widget.selectedDays.contains(dayOnWeek[index])
+        //                   ? primaryColor50
+        //                   : transparentColor
+        //               : transparentColor,
+        //           minimumSize: const Size(50, 30),
+        //           maximumSize: const Size(100, 30),
+        //           padding: const EdgeInsets.symmetric(
+        //             horizontal: 12,
+        //             vertical: 0,
+        //           ),
+        //           side: BorderSide(
+        //             color: widget.isActive
+        //                 ? widget.selectedDays.contains(dayOnWeek[index])
+        //                     ? primaryColor500
+        //                     : subtitleTextColor
+        //                 : subtitleTextColor.withOpacity(0.5),
+        //           ),
+        //           shape: RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(6.0),
+        //           ),
+        //         ),
+        //         child: Text(
+        //           dayOnWeek[index],
+        //           style: labelNormalTextStyle.copyWith(
+        //             color: widget.isActive
+        //                 ? widget.selectedDays.contains(dayOnWeek[index])
+        //                     ? primaryColor500
+        //                     : subtitleTextColor
+        //                 : subtitleTextColor.withOpacity(0.5),
+        //           ),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ),
       ],
     );
   }

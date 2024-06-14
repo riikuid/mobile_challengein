@@ -286,28 +286,28 @@ class DetailHistoryPage extends StatelessWidget {
                 ),
               ],
             ),
-            const Expanded(
-              child: SizedBox(),
-            ),
-            PrimaryButton(
-              child: Text(
-                "Back To Home",
-                style: primaryTextStyle.copyWith(
-                  color: whiteColor,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Dashboard(),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(
-              height: 20,
-            ),
+            // const Expanded(
+            //   child: SizedBox(),
+            // ),
+            // PrimaryButton(
+            //   child: Text(
+            //     "Back To Home",
+            //     style: primaryTextStyle.copyWith(
+            //       color: whiteColor,
+            //     ),
+            //   ),
+            //   onPressed: () {
+            //     Navigator.pushReplacement(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => Dashboard(),
+            //       ),
+            //     );
+            //   },
+            // ),
+            // const SizedBox(
+            //   height: 20,
+            // ),
           ],
         ),
       ),

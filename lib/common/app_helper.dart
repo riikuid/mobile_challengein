@@ -85,6 +85,21 @@ class AppHelper {
     }
   }
 
+  static Color getColorBasedOnStatusWD(String status) {
+    status = status.toUpperCase(); // Case-insensitive comparison
+
+    switch (status) {
+      case 'SUCCESS':
+        return greenLableColor;
+      case 'PROCESS':
+        return orangeLableColor;
+      case 'FAILED':
+        return redLableColor;
+      default:
+        return blackColor;
+    }
+  }
+
   static String formatDatePostHistory(DateTime date) {
     return DateFormat('yyyy-MM-dd').format(date);
   }

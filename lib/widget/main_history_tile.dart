@@ -97,7 +97,7 @@ class MainHistoryTile extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: labelLargeTextStyle.copyWith(
-                            color: Colors.red,
+                            color: blackColor,
                             fontWeight: medium,
                           ),
                         ),

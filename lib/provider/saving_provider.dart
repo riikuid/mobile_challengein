@@ -7,6 +7,7 @@ import 'package:mobile_challengein/model/bank_model.dart';
 import 'package:mobile_challengein/model/history_model.dart';
 import 'package:mobile_challengein/model/payout_account_model.dart';
 import 'package:mobile_challengein/model/payout_model.dart';
+import 'package:mobile_challengein/model/request/payout_request.dart';
 import 'package:mobile_challengein/model/request/saving_request.dart';
 import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/model/topup_model.dart';
@@ -56,6 +57,7 @@ class SavingProvider with ChangeNotifier {
     } catch (error) {
       getUserSaving(token, (p0) {});
       log('qqqqqq $error');
+      _savings = [];
       errorCallback?.call(error);
       return false;
     }
@@ -432,11 +434,21 @@ class SavingProvider with ChangeNotifier {
     try {
       log("Masuk Create Payout");
       PayoutModel result = await SavingService().createPayout(
-        payoutAccount: account,
-        amount: amount,
-        idSaving: idSaving,
+        request: PayoutRequest(
+          bankName: account.bankname,
+          idSavings: idSaving,
+          norek: account.accountnumber,
+          nameRekening: account.accountname,
+          amountMoney: amount.toString(),
+        ),
         token: (await tokenRepository.getToken())!,
       );
+      // PayoutModel result = await SavingService().createPayout(
+      //   payoutAccount: account,
+      //   amount: amount,
+      //   idSaving: idSaving,
+      //   token: (await tokenRepository.getToken())!,
+      // );
       log("DONE CREATE PAYOUT");
 
       await refreshGetHistory(

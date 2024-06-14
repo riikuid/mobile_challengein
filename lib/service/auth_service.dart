@@ -1,7 +1,6 @@
 import "dart:convert";
 
 import "package:http/http.dart" as http;
-import "package:mobile_challengein/model/bank_model.dart";
 import "package:mobile_challengein/model/user_model.dart";
 
 class AuthService {
@@ -67,7 +66,7 @@ class AuthService {
       'name': fullName,
       'email': email,
       'password': password,
-      'konfirmasi_password': passwordConfirmation,
+      'confirm_password': passwordConfirmation,
     });
 
     final response = await http.post(
@@ -209,7 +208,7 @@ class AuthService {
     var body = jsonEncode({
       'code': code,
       'password': password,
-      'konfirmasi_password': confirmationPassword,
+      'confirm_password': confirmationPassword,
     });
 
     final response =

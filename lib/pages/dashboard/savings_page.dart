@@ -129,23 +129,16 @@ class _SavingsPageState extends State<SavingsPage> {
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         surfaceTintColor: transparentColor,
         backgroundColor: whiteColor,
         actions: [
           SizedBox(
             height: 32,
-            width: 120,
+            width: 130,
             child: TextButton(
               onPressed: () {
                 _showSavingsTypeDialog(context);
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const CreateSavingPage(
-                //       savingType: "savings_record",
-                //     ),
-                //   ),
-                // );
               },
               style: TextButton.styleFrom(
                 shape: const RoundedRectangleBorder(
@@ -154,12 +147,9 @@ class _SavingsPageState extends State<SavingsPage> {
                   ),
                 ),
                 backgroundColor: primaryColor500,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 0,
-                ),
+                padding: EdgeInsets.zero,
                 elevation: 0,
-                // fixedSize: Size(150, 20),
+                fixedSize: const Size(180, 20),
               ),
               child: Text(
                 "Create Saving",

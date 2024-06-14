@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:mobile_challengein/model/user_model.dart';
 import 'package:mobile_challengein/pages/auth/sign_in_page.dart';
 import 'package:mobile_challengein/pages/savings/create_saving_page.dart';
@@ -13,6 +14,7 @@ import 'package:mobile_challengein/widget/home_user_savings_widget.dart';
 import 'package:mobile_challengein/widget/main_history_tile.dart';
 import 'package:mobile_challengein/widget/main_history_tile_skeleton.dart';
 import 'package:mobile_challengein/widget/primary_button.dart';
+import 'package:mobile_challengein/widget/saving_type_card.dart';
 import 'package:mobile_challengein/widget/throw_snackbar.dart';
 import 'package:provider/provider.dart';
 
@@ -57,12 +59,14 @@ class _HomePageState extends State<HomePage> {
         errorLogout = p0.toString();
       }),
     );
+    Navigator.pop(context);
     if (logoutStatus) {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => SignInPage(),
           ));
+      ThrowSnackbar().showError(context, "Successfully Logged Out");
     } else {
       ThrowSnackbar().showError(context, errorLogout);
     }
@@ -74,6 +78,82 @@ class _HomePageState extends State<HomePage> {
       typeTrx: "",
       startDate: "",
       endDate: "",
+    );
+  }
+
+  void _showSavingsTypeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          content: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'CHOOSE YOUR SAVING TYPE',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  'Determine the type of savings you will make for your goals',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14.0,
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CreateSavingPage(
+                        savingType: SavingType.wallet,
+                      ),
+                    ),
+                  ),
+                  child: SavingsTypeCard(
+                    color: greenLableColor,
+                    title: 'WALLET SAVINGS',
+                    description:
+                        'Savings that you can top up using real money by payment gateway',
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CreateSavingPage(
+                        savingType: SavingType.record,
+                      ),
+                    ),
+                  ),
+                  child: SavingsTypeCard(
+                    color: orangeLableColor,
+                    title: 'SAVINGS RECORD',
+                    description:
+                        'A savings recorder that can be used for savings managers without top up with real money',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -138,7 +218,105 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   IconButton(
-                      onPressed: handleLogout,
+                      onPressed: () {
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: true, // user must tap button!
+
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: whiteColor,
+                              insetPadding: EdgeInsets.zero,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 25, horizontal: 40),
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              content: IntrinsicHeight(
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundColor:
+                                          secondaryColor500.withOpacity(0.3),
+                                      child: Icon(
+                                        Icons.logout,
+                                        size: 20,
+                                        color: secondaryColor600,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      "Confirm Logout",
+                                      style: headingMediumTextStyle.copyWith(
+                                        fontWeight: semibold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      "Do you really want to log out\nof your account?",
+                                      textAlign: TextAlign.center,
+                                      style: paragraphLargeTextStyle.copyWith(
+                                        fontSize: 12,
+                                        color: subtitleTextColor,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: PrimaryButton(
+                                            elevation: 0,
+                                            color: whiteColor,
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              "Cancel",
+                                              style: paragraphNormalTextStyle
+                                                  .copyWith(
+                                                color: blackColor,
+                                                fontWeight: regular,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: PrimaryButton(
+                                            elevation: 0,
+                                            color: secondaryColor500,
+                                            onPressed: handleLogout,
+                                            child: Text(
+                                              "Confirm",
+                                              style: paragraphNormalTextStyle
+                                                  .copyWith(
+                                                color: whiteColor,
+                                                fontWeight: regular,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
                       icon: Icon(
                         Icons.exit_to_app,
                         color: whiteColor,
@@ -237,6 +415,7 @@ class _HomePageState extends State<HomePage> {
                             return Center(
                               child: PrimaryButton(
                                 onPressed: () {
+                                  _showSavingsTypeDialog(context);
                                   // Navigator.push(
                                   //   context,
                                   //   MaterialPageRoute(
@@ -283,6 +462,7 @@ class _HomePageState extends State<HomePage> {
                                         .map((item) => HomeSavingsCard(
                                               saving: item,
                                             ))
+                                        .take(5)
                                         .toList(),
                                   ),
                                 ));

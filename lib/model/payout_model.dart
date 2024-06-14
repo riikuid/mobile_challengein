@@ -14,6 +14,7 @@ class PayoutModel {
   final String idSavings;
   final String norek;
   final String nameRekening;
+  final String bankName;
   final int amountMoney;
   final String statusPayouts;
   final DateTime createdAt;
@@ -25,6 +26,7 @@ class PayoutModel {
     required this.idSavings,
     required this.norek,
     required this.nameRekening,
+    required this.bankName,
     required this.amountMoney,
     required this.statusPayouts,
     required this.createdAt,
@@ -37,6 +39,7 @@ class PayoutModel {
         idSavings: json["id_savings"],
         norek: json["norek"],
         nameRekening: json["name_rekening"],
+        bankName: json["bank_name"],
         amountMoney: json["amount_money"],
         statusPayouts: json["status_payouts"],
         createdAt: DateTime.parse(json["created_at"]),

@@ -269,6 +269,7 @@ class _SavingsWalletModalState extends State<SavingsWalletModal>
           } else if (amount.toInt() > widget.saving.savingAmount) {
             Fluttertoast.showToast(msg: "Insufficient amount of saving.");
           } else {
+            log("WD SAVING ${widget.saving.id}");
             await savingProvider
                 .createPayout(
               account: savingProvider.payoutAccountModel!,
@@ -544,26 +545,29 @@ class _SavingsWalletModalState extends State<SavingsWalletModal>
                       const SizedBox(
                         width: 15,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            savingProvider.payoutAccountModel?.accountname ??
-                                "Kosong",
-                            style: primaryTextStyle.copyWith(
-                              fontSize: 16,
-                              fontWeight: semibold,
+                      SizedBox(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              savingProvider.payoutAccountModel?.accountname ??
+                                  "Kosong",
+                              style: primaryTextStyle.copyWith(
+                                fontSize: 16,
+                                fontWeight: semibold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          Text(
-                            "${savingProvider.payoutAccountModel?.bankname ?? "Kosong"} - ${savingProvider.payoutAccountModel?.accountnumber ?? "Kosong"}",
-                            style: labelSmallTextStyle.copyWith(
-                              fontSize: 12,
-                              fontWeight: regular,
-                              color: subtitleTextColor,
+                            Text(
+                              "${savingProvider.payoutAccountModel?.bankname ?? "Kosong"} - ${savingProvider.payoutAccountModel?.accountnumber ?? "Kosong"}",
+                              style: labelSmallTextStyle.copyWith(
+                                fontSize: 12,
+                                fontWeight: regular,
+                                color: subtitleTextColor,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),

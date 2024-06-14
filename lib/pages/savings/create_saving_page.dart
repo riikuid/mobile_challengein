@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -46,7 +47,16 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
   }
 
   // CHECKBOX DAY
-  List<String> selectedDay = ['Sunday'];
+  List<String> selectedDays = ['Sunday'];
+  List<String> dayOnWeek = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
 
   // SWITCH
   bool switchValue = false;
@@ -98,7 +108,7 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
   @override
   void initState() {
     dateValue = DateTime(todayDate.year, todayDate.month, todayDate.day + 1);
-    frequencyString = 'Daily';
+    frequencyString = 'Weekly';
     frequencyValue = getFrequencyValue(frequencyString);
     resultNominal = 0;
     allowedSelectDate =
@@ -141,7 +151,7 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
         targetDate: dateValue,
         fillingNominal: resultNominal.toString(),
         fillingFrequency: frequencyString,
-        dayReminder: selectedDay,
+        dayReminder: selectedDays,
         savingType: widget.savingType,
         isReminder: switchValue ? 1 : 0,
         timeReminder: defaultTime.format(context),
@@ -388,7 +398,19 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                       setState(() {
                         frequencyString = value!;
                         frequencyValue = getFrequencyValue(value);
+                        if (value == "Daily") {
+                          selectedDays = [
+                            'Sunday',
+                            'Monday',
+                            'Tuesday',
+                            'Wednesday',
+                            'Thursday',
+                            'Friday',
+                            'Saturday',
+                          ];
+                        }
                       });
+                      log("SELECTED DAY : $selectedDays");
                       if (targetAmountController.text.isNotEmpty) {
                         calculateResult();
                       }
@@ -418,7 +440,7 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                   ),
                   SetReminderWidget(
                     isActive: switchValue,
-                    selectedDays: selectedDay,
+                    selectedDays: selectedDays,
                     onSwitchPressed: (bool value) {
                       setState(() {
                         switchValue = value;
@@ -427,6 +449,71 @@ class _CreateSavingPageState extends State<CreateSavingPage> {
                     timeValue: defaultTime,
                     onTimePressed: () => displayTimePicker(context),
                   ),
+                  frequencyString == "Daily"
+                      ? SizedBox()
+                      : Wrap(
+                          spacing: 8.0, // Spasi horizontal antar item
+                          runSpacing: -8.0, // Spasi vertikal antar item
+                          children: List.generate(
+                            dayOnWeek.length,
+                            (index) {
+                              return TextButton(
+                                onPressed: switchValue
+                                    ? () {
+                                        setState(() {
+                                          if (selectedDays
+                                              .contains(dayOnWeek[index])) {
+                                            if (selectedDays.length > 1) {
+                                              selectedDays
+                                                  .remove(dayOnWeek[index]);
+                                            }
+                                          } else {
+                                            selectedDays.add(dayOnWeek[index]);
+                                          }
+                                          // selectedDay.add(dayOnWeek[index]);
+                                        });
+                                        debugPrint(selectedDays.toString());
+                                      }
+                                    : null,
+                                style: TextButton.styleFrom(
+                                  backgroundColor: switchValue
+                                      ? selectedDays.contains(dayOnWeek[index])
+                                          ? primaryColor50
+                                          : transparentColor
+                                      : transparentColor,
+                                  minimumSize: const Size(50, 30),
+                                  maximumSize: const Size(100, 30),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 0,
+                                  ),
+                                  side: BorderSide(
+                                    color: switchValue
+                                        ? selectedDays
+                                                .contains(dayOnWeek[index])
+                                            ? primaryColor500
+                                            : subtitleTextColor
+                                        : subtitleTextColor.withOpacity(0.5),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  dayOnWeek[index],
+                                  style: labelNormalTextStyle.copyWith(
+                                    color: switchValue
+                                        ? selectedDays
+                                                .contains(dayOnWeek[index])
+                                            ? primaryColor500
+                                            : subtitleTextColor
+                                        : subtitleTextColor.withOpacity(0.5),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                   const SizedBox(
                     height: 20,
                   ),

@@ -222,6 +222,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         surfaceTintColor: transparentColor,
         backgroundColor: whiteColor,
         title: Text(
@@ -398,7 +399,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                         height: 15,
                                       ),
                                       Text(
-                                        "Date",
+                                        "Category",
                                         style: primaryTextStyle.copyWith(
                                           fontWeight: semibold,
                                         ),

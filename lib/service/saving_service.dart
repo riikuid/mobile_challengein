@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:mobile_challengein/model/bank_model.dart';
 import 'package:mobile_challengein/model/payout_account_model.dart';
 import 'package:mobile_challengein/model/payout_model.dart';
+import 'package:mobile_challengein/model/request/payout_request.dart';
 import 'package:mobile_challengein/model/request/saving_request.dart';
 import 'package:mobile_challengein/model/savings_model.dart';
 import 'package:http/http.dart' as http;
@@ -360,26 +361,28 @@ class SavingService {
 
   Future<PayoutModel> createPayout({
     required String token,
-    required PayoutAccountModel payoutAccount,
-    required int amount,
-    required String idSaving,
+    // required PayoutAccountModel payoutAccount,
+    // required int amount,
+    // required String idSaving,
+    required PayoutRequest request,
   }) async {
     var url = '$baseUrl/auth/payout';
     var headers = {
       'Authorization': 'Bearer $token',
     };
-    var body = {
-      'amount': amount,
-      "id_savings": idSaving,
-      "norek": payoutAccount.accountnumber,
-      "name_rekening": payoutAccount.bankname,
-      "amount_money": amount
-    };
+    // var body = {
+    //   "id_savings": idSaving,
+    //   "norek": payoutAccount.accountnumber,
+    //   "name_rekening": payoutAccount.accountname,
+    //   "amount_money": amount.toString()
+    // };
+
+    log(request.toJson().toString());
 
     final response = await http.post(
       Uri.parse(url),
       headers: headers,
-      body: body,
+      body: request.toJson(),
     );
 
     print(response.body);

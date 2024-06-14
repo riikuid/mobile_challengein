@@ -23,7 +23,7 @@ class _DeleteAlertState extends State<DeleteAlert> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 40),
+      contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 30),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       content: IntrinsicHeight(
         child: Column(
@@ -46,13 +46,24 @@ class _DeleteAlertState extends State<DeleteAlert> {
               ),
             ),
             const SizedBox(
-              height: 15,
+              height: 5,
             ),
             Text(
-              "Are you sure to delete this saving?\nThis action can't be undone",
+              "Are you sure to delete this saving?",
               textAlign: TextAlign.center,
               style: paragraphLargeTextStyle.copyWith(
                 fontSize: 12,
+                // color: subtitleTextColor,
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(
+              "This action will remove all data, history, and\nnotifications associated with the saving",
+              textAlign: TextAlign.center,
+              style: paragraphLargeTextStyle.copyWith(
+                fontSize: 10,
                 color: subtitleTextColor,
               ),
             ),
