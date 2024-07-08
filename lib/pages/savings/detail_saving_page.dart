@@ -18,7 +18,6 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:mobile_challengein/widget/primary_button.dart';
 import 'package:mobile_challengein/widget/savings_label.dart';
-import 'dart:math' as math;
 
 class DetailSavingPage extends StatefulWidget {
   final SavingModel saving;
@@ -110,14 +109,14 @@ class _DetailSavingPageState extends State<DetailSavingPage> {
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController()..addListener(_scrollListener);
     switchValue = widget.saving.isReminder;
+    futureGetHistories = _onRefresh();
+    _scrollController = ScrollController()..addListener(_scrollListener);
     // savingProvider.refreshGetHistory(
     //   token: authProvider.user.refreshToken,
     //   idSaving: widget.saving.id,
     // );
     _scrollController.addListener(onScroll);
-    futureGetHistories = _onRefresh();
   }
 
   void _scrollListener() {

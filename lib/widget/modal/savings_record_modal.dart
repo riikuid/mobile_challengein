@@ -92,8 +92,8 @@ class _SavingsRecordModalState extends State<SavingsRecordModal>
                     children: [
                       SvgPicture.asset(
                         widget.modalType == SavingsRecordModalType.increase
-                            ? "assets/icon/icon_modal_increase.svg"
-                            : "assets/icon/icon_modal_decrease.svg",
+                            ? "assets/icon/008-increase.svg"
+                            : "assets/icon/002-decrease.svg",
                         height: 35,
                       ),
                       const SizedBox(

@@ -414,11 +414,11 @@ class _SavingsWalletModalState extends State<SavingsWalletModal>
                     children: [
                       widget.modalType == SavingsWalletModalType.topup
                           ? SvgPicture.asset(
-                              "assets/icon/icon_topup.svg",
+                              "assets/icon/topup_modal.svg",
                               height: 35,
                             )
                           : SvgPicture.asset(
-                              "assets/icon/icon_withdraw.svg",
+                              "assets/icon/withdraw_modal.svg",
                               height: 35,
                             ),
                       const SizedBox(
@@ -879,11 +879,11 @@ class _SavingsWalletModalState extends State<SavingsWalletModal>
                   Row(
                     children: [
                       SvgPicture.asset(
-                        "assets/icon/icon_withdraw.svg",
+                        "assets/icon/withdraw_modal.svg",
                         height: 35,
                       ),
                       const SizedBox(
-                        width: 5,
+                        width: 10,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,13 +1,13 @@
+import 'dart:developer';
+
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:mobile_challengein/pages/dashboard/bottombar.dart';
 import 'package:mobile_challengein/pages/savings/top_up_page.dart';
 import 'package:mobile_challengein/provider/dashboard_provider.dart';
 import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
-import 'package:mobile_challengein/widget/countdown_widget.dart';
 import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
@@ -34,7 +34,7 @@ class _DashboardState extends State<Dashboard> {
       bottomNavigationBar: BottomNavBar(),
       floatingActionButton: Consumer<SavingProvider>(
         builder: (context, savingProvider, child) {
-          print("TOP UP MODEL: ${savingProvider.topUpModel.toString()}");
+          log("TOP UP MODEL: ${savingProvider.topUpModel.toString()}");
           if (savingProvider.topUpModel != null) {
             return SizedBox(
               width: device.size.width - 30,
@@ -102,7 +102,7 @@ class _DashboardState extends State<Dashboard> {
               ),
             );
           } else {
-            return SizedBox();
+            return const SizedBox();
           }
         },
       ),

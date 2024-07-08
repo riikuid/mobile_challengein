@@ -97,7 +97,7 @@ class _OtpForgotPasswordPageState extends State<OtpForgotPasswordPage> {
                 height: 10,
               ),
               Text(
-                "Verify OTP",
+                "OTP Forgot Password",
                 style: headingLargeTextStyle.copyWith(
                   fontWeight: bold,
                 ),
