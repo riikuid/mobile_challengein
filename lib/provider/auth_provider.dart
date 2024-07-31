@@ -34,7 +34,6 @@ class AuthProvider with ChangeNotifier {
       return false;
     } catch (e) {
       errorCallback?.call(e);
-      // print(e.toString());
       return false;
     }
   }

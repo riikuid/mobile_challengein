@@ -223,6 +223,7 @@ class _HistoryPageState extends State<HistoryPage> {
       backgroundColor: whiteColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        centerTitle: false,
         surfaceTintColor: transparentColor,
         backgroundColor: whiteColor,
         title: Text(

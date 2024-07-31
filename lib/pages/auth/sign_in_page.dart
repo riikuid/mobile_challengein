@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -28,40 +31,44 @@ class _SignInPageState extends State<SignInPage> {
   bool _isLoading = false;
 
   Future<void> handleLogin() async {
-    FocusScope.of(context).requestFocus(FocusNode());
-    AuthProvider authProvider =
-        Provider.of<AuthProvider>(context, listen: false);
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: true,
-      badge: true,
-      carPlay: true,
-      criticalAlert: true,
-      provisional: true,
-      sound: true,
-    );
-
-    messaging.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    print('User granted permission: ${settings.authorizationStatus}');
-
-    final fcmToken = await messaging.getToken();
-
     setState(() {
       _isLoading = true;
     });
-    print("FCM TOKEN $fcmToken");
+
+    String? fcmToken = "";
+
+    FocusScope.of(context).requestFocus(FocusNode());
+    AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
+
+    if (Platform.isAndroid) {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      messaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        announcement: true,
+        badge: true,
+        carPlay: true,
+        criticalAlert: true,
+        provisional: true,
+        sound: true,
+      );
+      fcmToken = await messaging.getToken();
+      log('User granted permission: ${settings.authorizationStatus}');
+    } else if (Platform.isIOS) {
+      // iOS-specific code
+    }
+
+    log("FCM TOKEN $fcmToken");
     await authProvider
         .login(
       email: emailController.text,
       password: passwordController.text,
-      fcmToken: fcmToken!,
+      fcmToken: fcmToken ?? '',
       errorCallback: (e) => setState(
         () {
           errorText = e.toString();
