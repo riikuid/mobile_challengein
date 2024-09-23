@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:mobile_challengein/common/token_repository.dart';
 import 'package:mobile_challengein/model/bank_model.dart';
+import 'package:mobile_challengein/model/filter_saving_model.dart';
 import 'package:mobile_challengein/model/history_model.dart';
 import 'package:mobile_challengein/model/payout_account_model.dart';
 import 'package:mobile_challengein/model/payout_model.dart';
@@ -20,6 +21,17 @@ class SavingProvider with ChangeNotifier {
 
   List<SavingModel> _savings = [];
   List<SavingModel> get savings => _savings;
+  List<SavingModel> _originalSavings = [];
+
+  List<SavingModel> filteredSavings = [];
+
+  List<FilterSavingModel> _filters = [];
+  List<FilterSavingModel> get filters => _filters;
+
+  bool isAppliedFilter = true;
+
+  String _selectedFilterCondition = 'AND';
+  String get selectedFilterCondition => _selectedFilterCondition;
 
   UserSaving? _userSaving;
   UserSaving? get userSaving => _userSaving;
@@ -38,6 +50,159 @@ class SavingProvider with ChangeNotifier {
 
   bool isOnTrx = false;
 
+  void addFilter({
+    required FilterSavingModel item,
+  }) {
+    try {
+      _filters.add(item);
+      isAppliedFilter = false;
+      notifyListeners();
+      // ignore: empty_catches
+    } catch (error) {}
+  }
+
+  void deleteFilter({
+    required FilterSavingModel item,
+  }) {
+    try {
+      _filters.removeWhere((filter) => filter.id == item.id);
+      isAppliedFilter = false;
+      notifyListeners();
+      // ignore: empty_catches
+    } catch (error) {}
+  }
+
+  void updateFilter({
+    required FilterSavingModel item,
+  }) {
+    try {
+      _filters = _filters.map((filter) {
+        if (filter.id == item.id) {
+          return item;
+        } else {
+          return filter;
+        }
+      }).toList();
+      isAppliedFilter = false;
+      notifyListeners();
+      // ignore: empty_catches
+    } catch (error) {}
+  }
+
+  void resetFilter() {
+    _filters = [];
+    _savings = _originalSavings;
+    isAppliedFilter = false;
+    notifyListeners();
+  }
+
+  void setFilterCondition({required String conditions}) {
+    _selectedFilterCondition = conditions;
+    notifyListeners();
+  }
+
+  void applyFilter() {
+    isAppliedFilter = true;
+
+    // RESET
+    _savings = _originalSavings;
+
+    // TEMP FILTER
+    List<SavingModel> filteredResults = [];
+
+    for (var filter in filters) {
+      List<SavingModel> tempFiltered = _savings.where((saving) {
+        bool matches = true;
+
+        // Filter berdasarkan goalName dengan kondisi dari dropdown
+        if (filter.goalName != null && filter.goalNameCondition != null) {
+          switch (filter.goalNameCondition) {
+            case GoalNameCondition.contains:
+              if (!saving.goalName
+                  .toLowerCase()
+                  .contains(filter.goalName!.toLowerCase())) {
+                matches = false;
+              }
+              break;
+            case GoalNameCondition.doesntContain:
+              if (saving.goalName
+                  .toLowerCase()
+                  .contains(filter.goalName!.toLowerCase())) {
+                matches = false;
+              }
+              break;
+            case GoalNameCondition.iss:
+              if (saving.goalName.toLowerCase() !=
+                  filter.goalName!.toLowerCase()) {
+                matches = false;
+              }
+              break;
+            case GoalNameCondition.isNot:
+              if (saving.goalName.toLowerCase() ==
+                  filter.goalName!.toLowerCase()) {
+                matches = false;
+              }
+              break;
+            case GoalNameCondition.startsWith:
+              if (!saving.goalName
+                  .toLowerCase()
+                  .startsWith(filter.goalName!.toLowerCase())) {
+                matches = false;
+              }
+              break;
+            case GoalNameCondition.endsWith:
+              if (!saving.goalName
+                  .toLowerCase()
+                  .endsWith(filter.goalName!.toLowerCase())) {
+                matches = false;
+              }
+              break;
+            default:
+              break;
+          }
+        }
+
+        if (filter.lowesTargetAmound != null &&
+            saving.targetAmount < filter.lowesTargetAmound!) {
+          matches = false;
+        }
+        if (filter.highestTargetAmound != null &&
+            saving.targetAmount > filter.highestTargetAmound!) {
+          matches = false;
+        }
+        if (filter.startTargetDate != null &&
+            saving.targetDate.isBefore(filter.startTargetDate!)) {
+          matches = false;
+        }
+        if (filter.endTargetDate != null &&
+            saving.targetDate.isAfter(filter.endTargetDate!)) {
+          matches = false;
+        }
+
+        return matches;
+      }).toList();
+
+      // Gabungkan hasil berdasarkan kondisi AND/OR
+      if (_selectedFilterCondition == 'AND') {
+        if (filteredResults.isEmpty) {
+          filteredResults = tempFiltered;
+        } else {
+          filteredResults = filteredResults
+              .where((saving) => tempFiltered.contains(saving))
+              .toList();
+        }
+      } else if (_selectedFilterCondition == 'OR') {
+        filteredResults.addAll(tempFiltered);
+        filteredResults =
+            filteredResults.toSet().toList(); // Menghilangkan duplikasi
+      }
+    }
+
+    _savings = filteredResults;
+
+    notifyListeners();
+  }
+
   Future<bool> getSavings(
     String token,
     void Function(dynamic)? errorCallback,
@@ -47,6 +212,7 @@ class SavingProvider with ChangeNotifier {
       List<SavingModel> savings =
           await SavingService().getSavings(token: token);
       _savings = savings;
+      _originalSavings = savings;
       getUserSaving(token, (p0) {});
       log("INI ISI DARI GET SAVINGS");
       return true;

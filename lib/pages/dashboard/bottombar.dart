@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_challengein/provider/dashboard_provider.dart';
+import 'package:mobile_challengein/provider/saving_provider.dart';
 import 'package:mobile_challengein/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,7 @@ class BottomNavBar extends StatelessWidget {
         selectedIndex: dashboardProvider.currentIndex,
         onDestinationSelected: (value) {
           dashboardProvider.setIndex(value);
+          context.read<SavingProvider>().resetFilter();
         },
         destinations: dashboardProvider.dashboardMenu.map(
           (item) {

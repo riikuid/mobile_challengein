@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:mobile_challengein/theme.dart';
+import 'package:mobile_challengein/widget/modal/filter_modal.dart';
+import 'package:mobile_challengein/widget/modal/list_filter_modal.dart';
 
 class SearchFilterWidget extends StatelessWidget {
   final String placeHolder;
@@ -59,46 +61,62 @@ class SearchFilterWidget extends StatelessWidget {
             ),
           ),
         ),
-        // const SizedBox(
-        //   width: 10,
-        // ),
-        // InkWell(
-        //   onTap: () {},
-        //   child: Ink(
-        //     decoration: BoxDecoration(
-        //       borderRadius: BorderRadius.circular(4),
-        //     ),
-        //     child: Container(
-        //       padding: const EdgeInsets.symmetric(horizontal: 12),
-        //       height: 48,
-        //       decoration: BoxDecoration(
-        //         borderRadius: const BorderRadius.all(
-        //           Radius.circular(4.0),
-        //         ),
-        //         border: Border.all(
-        //           color: hintTextColor,
-        //         ),
-        //         shape: BoxShape.rectangle,
-        //       ),
-        //       child: Row(
-        //         children: [
-        //           Icon(
-        //             Icons.tune,
-        //             size: 22,
-        //             color: blackColor,
-        //           ),
-        //           const SizedBox(
-        //             width: 5,
-        //           ),
-        //           Text(
-        //             "Filter",
-        //             style: paragraphNormalTextStyle,
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // ),
+        const SizedBox(
+          width: 10,
+        ),
+        InkWell(
+          onTap: () {
+            showModalBottomSheet<void>(
+              isScrollControlled: true,
+              isDismissible: true,
+              shape: const ContinuousRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                ),
+              ),
+              backgroundColor: Colors.white,
+              context: context,
+              builder: (BuildContext context) {
+                return const ListFilterModal();
+              },
+            );
+          },
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(4.0),
+                ),
+                border: Border.all(
+                  color: hintTextColor,
+                ),
+                shape: BoxShape.rectangle,
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.tune,
+                    size: 22,
+                    color: blackColor,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "Filter",
+                    style: paragraphNormalTextStyle,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

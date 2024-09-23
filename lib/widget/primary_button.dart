@@ -49,11 +49,13 @@ class PrimaryButton extends StatelessWidget {
                 )
               : BorderSide.none,
         ),
-        backgroundColor: !isLoading!
-            ? color ?? primaryColor500
-            : reverseLoading!
-                ? whiteColor
-                : disabledColor,
+        backgroundColor: isEnabled!
+            ? !isLoading!
+                ? color ?? primaryColor500
+                : reverseLoading!
+                    ? whiteColor
+                    : disabledColor
+            : disabledColor,
         foregroundColor: secondaryColor100,
         shadowColor: elevation != 0 ? null : transparentColor,
         minimumSize: Size(

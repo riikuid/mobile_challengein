@@ -28,7 +28,7 @@ class _SavingsPageState extends State<SavingsPage> {
   late UserModel user = authProvider.user;
   late SavingProvider savingProvider =
       Provider.of<SavingProvider>(context, listen: false);
-  String errorGetSavingText = "Failed to get savings";
+  String errorGetSavingText = "Savings not found";
   late Future<void> futureGetSavings;
 
   void _showSavingsTypeDialog(BuildContext context) {

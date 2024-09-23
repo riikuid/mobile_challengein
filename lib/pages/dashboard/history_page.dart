@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mobile_challengein/common/app_helper.dart';
 import 'package:mobile_challengein/provider/auth_provider.dart';
@@ -12,7 +10,6 @@ import 'package:mobile_challengein/widget/custom_text_field.dart';
 import 'package:mobile_challengein/widget/main_history_tile.dart';
 import 'package:mobile_challengein/widget/main_history_tile_skeleton.dart';
 import 'package:mobile_challengein/widget/primary_button.dart';
-import 'package:mobile_challengein/widget/search_filter_widget.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -93,9 +90,6 @@ class _HistoryPageState extends State<HistoryPage> {
       typeTrx: selectedTypeTrxNew,
       statusTrx: selectedStatusNew,
     );
-    // setState(() {
-    //   // _isLoading = false;
-    // });
   }
 
   void onScroll({
@@ -517,7 +511,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 icon: Stack(
                   alignment: Alignment.bottomLeft,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.tune,
                     ),
                     isFiltered
@@ -526,7 +520,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             size: 8,
                             color: redLableColor,
                           )
-                        : SizedBox()
+                        : const SizedBox()
                   ],
                 ),
               ),

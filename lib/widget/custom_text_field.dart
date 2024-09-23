@@ -32,11 +32,13 @@ class CustomTextField extends StatelessWidget {
   final bool? enableTooltip;
   final bool? enableError;
   final String? errorText;
+  final TextStyle? lableStyle;
+  final double? borderRadius;
 
   final CustomTextFieldType? textFieldType;
 
   const CustomTextField({
-    super.key,
+    Key? key,
     // this.focusNode = FocusNode(),
     required this.labelText,
     required this.hintText,
@@ -56,11 +58,13 @@ class CustomTextField extends StatelessWidget {
     this.focusNode,
     this.style,
     this.hintStyle,
-    this.errorText = "Can not be empty",
     this.enableTooltip = false,
-    this.textFieldType = CustomTextFieldType.underline,
     this.enableError = false,
-  });
+    this.errorText = "Can not be empty",
+    this.lableStyle,
+    this.borderRadius,
+    this.textFieldType = CustomTextFieldType.underline,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +76,10 @@ class CustomTextField extends StatelessWidget {
                 children: [
                   Text(
                     labelText!,
-                    style: labelLargeTextStyle.copyWith(
-                      fontWeight: semibold,
-                    ),
+                    style: lableStyle ??
+                        labelLargeTextStyle.copyWith(
+                          fontWeight: semibold,
+                        ),
                   ),
                   const SizedBox(
                     width: 10,
@@ -101,6 +106,11 @@ class CustomTextField extends StatelessWidget {
             : const SizedBox(
                 height: 0,
               ),
+        textFieldType == CustomTextFieldType.outline
+            ? const SizedBox(
+                height: 5,
+              )
+            : const SizedBox(),
         DecoratedBox(
           decoration: BoxDecoration(
             color: textFieldType == CustomTextFieldType.underline
@@ -142,11 +152,11 @@ class CustomTextField extends StatelessWidget {
                             color: Colors.red,
                           ),
                         )
-                      : const OutlineInputBorder(
+                      : OutlineInputBorder(
                           borderRadius: BorderRadius.all(
-                            Radius.circular(8.0),
+                            Radius.circular(borderRadius ?? 8),
                           ),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Colors.red,
                           ),
                         )
@@ -169,8 +179,8 @@ class CustomTextField extends StatelessWidget {
                       ),
                     )
                   : OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(8.0),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(borderRadius ?? 8),
                       ),
                       borderSide: BorderSide(
                         color: disabledColor,
@@ -183,8 +193,8 @@ class CustomTextField extends StatelessWidget {
                       ),
                     )
                   : OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(8.0),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(borderRadius ?? 8),
                       ),
                       borderSide: BorderSide(
                         color: isPicker! ? disabledColor : primaryColor500,

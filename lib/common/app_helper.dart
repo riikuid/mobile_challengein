@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_challengein/model/filter_saving_model.dart';
 import 'package:mobile_challengein/theme.dart';
 
 class AppHelper {
@@ -48,6 +49,13 @@ class AppHelper {
     String formattedTime = DateFormat('HH:mm').format(dateTime);
 
     return '$formattedTime WIB';
+  }
+
+  static String formatRangeDate(
+      {required DateTime? startDate, required DateTime? endDate}) {
+    return (startDate != null && endDate != null)
+        ? "${formatDateToString(startDate)} - ${formatDateToString(endDate)}"
+        : '-';
   }
 
   static Duration getDurationDifference({
@@ -102,5 +110,36 @@ class AppHelper {
 
   static String formatDatePostHistory(DateTime date) {
     return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  static String formatConditionFilter(GoalNameCondition? condition) {
+    switch (condition) {
+      case GoalNameCondition.contains:
+        return "Contains";
+      case GoalNameCondition.doesntContain:
+        return "Doesn't contain";
+      case GoalNameCondition.iss:
+        return "Is";
+      case GoalNameCondition.isNot:
+        return "Is not";
+      case GoalNameCondition.startsWith:
+        return "Starts with";
+      case GoalNameCondition.endsWith:
+        return "Ends with";
+      default:
+        return "-";
+    }
+  }
+
+  static String formatRangeAmount(
+      {required int amount1, required int amount2}) {
+    if (amount1 == 0 && amount2 == 100000000) {
+      return '-';
+    } else if (amount2 == 100000000) {
+      return '>= ${formatCurrency(amount1)}';
+    } else if (amount1 == 0) {
+      return '<= ${formatCurrency(amount2)}';
+    }
+    return "${formatCurrency(amount1)} - ${formatCurrency(amount2)}";
   }
 }
