@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:mobile_challengein/common/token_repository.dart';
 import 'package:mobile_challengein/model/bank_model.dart';
-import 'package:mobile_challengein/model/filter_saving_model.dart';
+import 'package:mobile_challengein/model/filter_model.dart';
 import 'package:mobile_challengein/model/history_model.dart';
 import 'package:mobile_challengein/model/payout_account_model.dart';
 import 'package:mobile_challengein/model/payout_model.dart';
@@ -25,8 +25,8 @@ class SavingProvider with ChangeNotifier {
 
   List<SavingModel> filteredSavings = [];
 
-  List<FilterSavingModel> _filters = [];
-  List<FilterSavingModel> get filters => _filters;
+  List<FilterModel> _filters = [];
+  List<FilterModel> get filters => _filters;
 
   bool isAppliedFilter = true;
 
@@ -51,7 +51,7 @@ class SavingProvider with ChangeNotifier {
   bool isOnTrx = false;
 
   void addFilter({
-    required FilterSavingModel item,
+    required FilterModel item,
   }) {
     try {
       _filters.add(item);
@@ -61,8 +61,21 @@ class SavingProvider with ChangeNotifier {
     } catch (error) {}
   }
 
+  void addNestedFilter({
+    required String filterId,
+    required FilterModel newFilter,
+  }) {
+    FilterModel selectedFilter = _filters
+        .where(
+          (element) => element.id == filterId,
+        )
+        .first;
+    selectedFilter.nestedFilter?.add(newFilter);
+    notifyListeners();
+  }
+
   void deleteFilter({
-    required FilterSavingModel item,
+    required FilterModel item,
   }) {
     try {
       _filters.removeWhere((filter) => filter.id == item.id);
@@ -73,7 +86,7 @@ class SavingProvider with ChangeNotifier {
   }
 
   void updateFilter({
-    required FilterSavingModel item,
+    required FilterModel item,
   }) {
     try {
       _filters = _filters.map((filter) {
@@ -111,79 +124,10 @@ class SavingProvider with ChangeNotifier {
     List<SavingModel> filteredResults = [];
 
     for (var filter in filters) {
-      List<SavingModel> tempFiltered = _savings.where((saving) {
-        bool matches = true;
-
-        // Filter berdasarkan goalName dengan kondisi dari dropdown
-        if (filter.goalName != null && filter.goalNameCondition != null) {
-          switch (filter.goalNameCondition) {
-            case GoalNameCondition.contains:
-              if (!saving.goalName
-                  .toLowerCase()
-                  .contains(filter.goalName!.toLowerCase())) {
-                matches = false;
-              }
-              break;
-            case GoalNameCondition.doesntContain:
-              if (saving.goalName
-                  .toLowerCase()
-                  .contains(filter.goalName!.toLowerCase())) {
-                matches = false;
-              }
-              break;
-            case GoalNameCondition.iss:
-              if (saving.goalName.toLowerCase() !=
-                  filter.goalName!.toLowerCase()) {
-                matches = false;
-              }
-              break;
-            case GoalNameCondition.isNot:
-              if (saving.goalName.toLowerCase() ==
-                  filter.goalName!.toLowerCase()) {
-                matches = false;
-              }
-              break;
-            case GoalNameCondition.startsWith:
-              if (!saving.goalName
-                  .toLowerCase()
-                  .startsWith(filter.goalName!.toLowerCase())) {
-                matches = false;
-              }
-              break;
-            case GoalNameCondition.endsWith:
-              if (!saving.goalName
-                  .toLowerCase()
-                  .endsWith(filter.goalName!.toLowerCase())) {
-                matches = false;
-              }
-              break;
-            default:
-              break;
-          }
-        }
-
-        if (filter.lowesTargetAmound != null &&
-            saving.targetAmount < filter.lowesTargetAmound!) {
-          matches = false;
-        }
-        if (filter.highestTargetAmound != null &&
-            saving.targetAmount > filter.highestTargetAmound!) {
-          matches = false;
-        }
-        if (filter.startTargetDate != null &&
-            saving.targetDate.isBefore(filter.startTargetDate!)) {
-          matches = false;
-        }
-        if (filter.endTargetDate != null &&
-            saving.targetDate.isAfter(filter.endTargetDate!)) {
-          matches = false;
-        }
-
-        return matches;
-      }).toList();
+      List<SavingModel> tempFiltered = _applySingleFilter(filter, _savings);
 
       // Gabungkan hasil berdasarkan kondisi AND/OR
-      if (_selectedFilterCondition == 'AND') {
+      if (filter.condiniton == 'AND') {
         if (filteredResults.isEmpty) {
           filteredResults = tempFiltered;
         } else {
@@ -191,7 +135,7 @@ class SavingProvider with ChangeNotifier {
               .where((saving) => tempFiltered.contains(saving))
               .toList();
         }
-      } else if (_selectedFilterCondition == 'OR') {
+      } else if (filter.condiniton == 'OR') {
         filteredResults.addAll(tempFiltered);
         filteredResults =
             filteredResults.toSet().toList(); // Menghilangkan duplikasi
@@ -201,6 +145,95 @@ class SavingProvider with ChangeNotifier {
     _savings = filteredResults;
 
     notifyListeners();
+  }
+
+  List<SavingModel> _applySingleFilter(
+      FilterModel filter, List<SavingModel> savingsList) {
+    List<SavingModel> tempFiltered = savingsList.where((saving) {
+      bool matches = true;
+
+      // Filter berdasarkan goalName dengan kondisi dari dropdown
+      if (filter.goalName != null && filter.goalNameCondition != null) {
+        switch (filter.goalNameCondition) {
+          case GoalNameCondition.contains:
+            if (!saving.goalName
+                .toLowerCase()
+                .contains(filter.goalName!.toLowerCase())) {
+              matches = false;
+            }
+            break;
+          case GoalNameCondition.doesntContain:
+            if (saving.goalName
+                .toLowerCase()
+                .contains(filter.goalName!.toLowerCase())) {
+              matches = false;
+            }
+            break;
+          case GoalNameCondition.iss:
+            if (saving.goalName.toLowerCase() !=
+                filter.goalName!.toLowerCase()) {
+              matches = false;
+            }
+            break;
+          case GoalNameCondition.isNot:
+            if (saving.goalName.toLowerCase() ==
+                filter.goalName!.toLowerCase()) {
+              matches = false;
+            }
+            break;
+          case GoalNameCondition.startsWith:
+            if (!saving.goalName
+                .toLowerCase()
+                .startsWith(filter.goalName!.toLowerCase())) {
+              matches = false;
+            }
+            break;
+          case GoalNameCondition.endsWith:
+            if (!saving.goalName
+                .toLowerCase()
+                .endsWith(filter.goalName!.toLowerCase())) {
+              matches = false;
+            }
+            break;
+          default:
+            break;
+        }
+      }
+
+      if (filter.lowesTargetAmound != null &&
+          saving.targetAmount < filter.lowesTargetAmound!) {
+        matches = false;
+      }
+      if (filter.highestTargetAmound != null &&
+          saving.targetAmount > filter.highestTargetAmound!) {
+        matches = false;
+      }
+      if (filter.startTargetDate != null &&
+          saving.targetDate.isBefore(filter.startTargetDate!)) {
+        matches = false;
+      }
+      if (filter.endTargetDate != null &&
+          saving.targetDate.isAfter(filter.endTargetDate!)) {
+        matches = false;
+      }
+
+      // Jika filter memiliki nested filter, terapkan filter nested
+      if (filter.nestedFilter != null && filter.nestedFilter!.isNotEmpty) {
+        List<SavingModel> nestedResults = savingsList;
+        for (var nested in filter.nestedFilter!) {
+          nestedResults = _applySingleFilter(nested, nestedResults);
+        }
+        if (filter.condiniton == 'AND') {
+          matches = matches && nestedResults.contains(saving);
+        } else if (filter.condiniton == 'OR') {
+          matches = matches || nestedResults.contains(saving);
+        }
+      }
+
+      return matches;
+    }).toList();
+
+    return tempFiltered;
   }
 
   Future<bool> getSavings(

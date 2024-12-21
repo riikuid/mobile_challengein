@@ -489,13 +489,7 @@ class SuccessWithdrawPage extends StatelessWidget {
                                       'Have issue with transcation #${payoutModel.id}',
                                 }),
                               );
-                              // final Uri params = Uri(
-                              //   scheme: 'mailto',
-                              //   path: 'vikisahputra17@gmail.com',
-                              //   query:
-                              //       'subject=Transaction Issue', // Add your email subject and other parameters here
-                              // );
-                              // var url = params.toString();
+
                               if (await launchUrl(emailLaunchUri)) {
                                 // await launch(url);
                               } else {

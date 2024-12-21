@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_challengein/model/filter_saving_model.dart';
+import 'package:mobile_challengein/model/filter_model.dart';
 import 'package:mobile_challengein/theme.dart';
 
 class AppHelper {
@@ -31,7 +31,7 @@ class AppHelper {
   }
 
   static String formatDateToString(DateTime date) {
-    final format = DateFormat('dd MMMM yyyy');
+    final format = DateFormat('dd MMM yyyy');
     return format.format(date);
   }
 
@@ -53,9 +53,14 @@ class AppHelper {
 
   static String formatRangeDate(
       {required DateTime? startDate, required DateTime? endDate}) {
-    return (startDate != null && endDate != null)
-        ? "${formatDateToString(startDate)} - ${formatDateToString(endDate)}"
-        : '-';
+    if (startDate != null && endDate != null) {
+      return "${formatDateToString(startDate)} - ${formatDateToString(endDate)}";
+    } else if (startDate == null && endDate != null) {
+      return "<= ${formatDateToString(endDate)}";
+    } else if (startDate != null && endDate == null) {
+      return ">= ${formatDateToString(startDate)}";
+    }
+    return '-';
   }
 
   static Duration getDurationDifference({
@@ -132,14 +137,15 @@ class AppHelper {
   }
 
   static String formatRangeAmount(
-      {required int amount1, required int amount2}) {
+      {required int? amount1, required int? amount2}) {
     if (amount1 == 0 && amount2 == 100000000) {
       return '-';
-    } else if (amount2 == 100000000) {
+    } else if (amount2 == null && amount1 != null) {
       return '>= ${formatCurrency(amount1)}';
-    } else if (amount1 == 0) {
+    } else if (amount1 == null && amount2 != null) {
       return '<= ${formatCurrency(amount2)}';
+    } else {
+      return "${formatCurrency(amount1!)} - ${formatCurrency(amount2!)}";
     }
-    return "${formatCurrency(amount1)} - ${formatCurrency(amount2)}";
   }
 }
